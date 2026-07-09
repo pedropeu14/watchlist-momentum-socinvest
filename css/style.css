@@ -207,6 +207,10 @@ label.f { display: inline-flex; flex-direction: column; gap: 3px; font-size: 12p
 .help-body li { margin: 3px 0; }
 .help-body strong { color: var(--text); }
 .help-body .help-caveat { border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 10px; font-style: italic; }
+.help-body h4 { margin: 12px 0 4px; color: var(--text); font-size: 12.5px; text-transform: uppercase; letter-spacing: .4px; }
+.help-body table.gloss { width: 100%; margin: 4px 0; }
+.help-body table.gloss td { text-align: left; white-space: normal; vertical-align: top; padding: 5px 8px; font-size: 12.5px; }
+.help-body table.gloss td:first-child { white-space: nowrap; color: var(--text); font-weight: 600; width: 1%; }
 .help.closed .help-body { display: none; }
 
 .disclaimer {

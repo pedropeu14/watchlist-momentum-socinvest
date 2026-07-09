@@ -230,7 +230,7 @@ function renderSignals() {
       </table></div>
     </div>`;
 
-  const tbody = el.querySelector("tbody");
+  const tbody = el.querySelector("#sig-table tbody");
   const wl = watchlists().find(w => w.id === signalFilter.watchlist);
   let list = rows;
   if (wl) list = list.filter(r => wl.tickers.includes(r.ticker));
@@ -460,7 +460,7 @@ function renderStrategies() {
       const ret = (eq[eq.length - 1] / eq[0] - 1) * 100;
       let peak = -Infinity, dd = 0;
       for (const e of eq) { peak = Math.max(peak, e); dd = Math.max(dd, (peak - e) / peak); }
-      ensembleRow = `<tr><td class="l"><strong>Equal-weight ensemble</strong> <span class="muted">(⅓ in each active strategy)</span></td>
+      ensembleRow = `<tr><td class="l"><strong>Equal-weight ensemble</strong> <span class="muted">(1/${active.length} in each active strategy)</span></td>
         <td>—</td><td>—</td><td class="${pctCls(ret)}">${fmtPct(ret)}</td><td>—</td>
         <td class="neg">−${(dd * 100).toFixed(1)}%</td><td>—</td></tr>`;
     }
