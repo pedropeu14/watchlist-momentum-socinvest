@@ -74,8 +74,20 @@ function quadrantVerdict(mmz, fz) {
     text: "Price is depressed but the forward multiple is expensive: projected earnings fell faster than the price did. It looks cheap on the chart and is not — suspicion first." };
   if (richP && cheapE) return { cls: "BUY", label: "Earnings-driven rally",
     text: "Price is stretched but the multiple is not: earnings grew into the move. Momentum with valuation support — not automatically a sell." };
-  return { cls: "HOLD", label: "Inside the bands",
-    text: "Neither ruler is at an extreme (both within ±1σ). No quadrant signal — let price and earnings argue it out." };
+  return { cls: "HOLD", label: "No quadrant verdict",
+    text: "The two rulers don't BOTH reach ±1σ, so no quadrant is named. A one-legged extreme (price without multiple, or vice-versa) is a lead to investigate — the individual sections above tell you which leg — not a combined signal." };
+}
+
+// Sign-based map position — same quadrant labels as the Socinvest scatter,
+// which cuts at zero. Position says WHERE the asset sits; the ±1σ verdict
+// says whether that position is statistically meaningful.
+function quadrantPosition(mmz, fz) {
+  if (mmz === null || mmz === undefined || fz === null || fz === undefined) return null;
+  return {
+    label: `${fz < 0 ? "cheap" : "expensive"} & ${mmz < 0 ? "depressed" : "stretched"}`,
+    pBorder: Math.abs(mmz) < 0.25,
+    eBorder: Math.abs(fz) < 0.25,
+  };
 }
 
 async function loadAll() {
@@ -426,10 +438,16 @@ function fpeSection(a) {
       Bloomberg series via the Socinvest project. The denominator is <em>projected</em> consensus earnings —
       the z moves on estimate revisions, not only on price.
     </div>
-    ${v ? `<div class="banner" style="margin-top:10px">
-      <span class="sig ${v.cls}">${v.label}</span>&nbsp; <strong>MM200 ${fmtN(a.ind.mm200.z, 2)}σ × Fwd P/E ${fmtN(e.z, 2)}σ.</strong>
-      ${v.text} Backtest "Double Depression" on this asset to see how the buy quadrant actually paid.
-    </div>` : ""}`;
+    ${v ? (() => {
+      const pos = quadrantPosition(a.ind.mm200.z, e.z);
+      return `<div class="banner" style="margin-top:10px">
+      <div><strong>Quadrant position:</strong> <em>${pos.label}</em>
+        — MM200 ${fmtN(a.ind.mm200.z, 2)}σ${pos.pBorder ? " (borderline)" : ""}
+        × Fwd P/E ${fmtN(e.z, 2)}σ${pos.eBorder ? " (borderline)" : ""}.
+        <span class="muted">Sign-based, as in the Socinvest scatter — location, not strength.</span></div>
+      <div style="margin-top:6px"><span class="sig ${v.cls}">${v.label}</span>&nbsp; ${v.text}
+        Backtest "Double Depression" on this asset to see how the buy quadrant actually paid.</div>
+    </div>`; })() : ""}`;
 }
 
 // Smart-money (13F) block inside the detail modal.
