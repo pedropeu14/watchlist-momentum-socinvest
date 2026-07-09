@@ -64,6 +64,36 @@ export const STRATEGIES = {
     useStops: false,
   },
 
+  fpeReversion: {
+    label: "Fwd P/E Reversion (±1σ)",
+    describe: "Socinvest ruler on the forward multiple: buy when the forward P/E sits 1σ below the asset's own history, sell at 1σ above. Expanding-window z (no lookahead), winsorized to P/E 2–100; no stops. Only runs on assets with Bloomberg forward P/E coverage.",
+    requires: "fpe",
+    enter(ind, bars, i) {
+      const z = ind.fpeZExp?.[i];
+      return z !== null && z !== undefined && z <= -1;
+    },
+    exit(ind, bars, i) {
+      const z = ind.fpeZExp?.[i];
+      return z !== null && z !== undefined && z >= 1;
+    },
+    useStops: false,
+  },
+
+  doubleDepression: {
+    label: "Double Depression (MM200 + Fwd P/E)",
+    describe: "The quadrant buy zone, mechanized: enter when BOTH the MM200 z-score and the forward P/E z-score are at or below −1σ (price depressed AND multiple cheap vs their own histories); exit when either ruler stretches to +1σ. No stops — the pure quadrant rule.",
+    requires: "fpe",
+    enter(ind, bars, i) {
+      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      return m !== null && f !== null && f !== undefined && m <= -1 && f <= -1;
+    },
+    exit(ind, bars, i) {
+      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      return (m !== null && m >= 1) || (f !== null && f !== undefined && f >= 1);
+    },
+    useStops: false,
+  },
+
   buyHold: {
     label: "Buy & Hold (benchmark)",
     describe: "Buy on the first tradable bar of the window, never sell. The bar every active strategy must beat.",

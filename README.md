@@ -46,6 +46,15 @@ Same pattern as a data pipeline: fetch once, serve snapshots.
   asset's own history. Shown as a signals column, as a banded chart in the
   detail view, and as ±1σ crossing alerts. The backtestable strategy uses an
   expanding-window z (no lookahead), unlike the display ruler.
+- **Forward P/E ruler + quadrant verdict** — weekly Bloomberg forward P/E
+  (via the [Socinvest project](https://pedropeu14.github.io/Socinvest/))
+  z-scored against each asset's own history, same method as the MM200.
+  Signals column, banded chart in the detail view, and the **MM200 × fwd P/E
+  quadrant verdict**: double depression = classic buy zone, double stretch =
+  classic sell zone, price-down/multiple-up = value-trap warning,
+  price-up/multiple-flat = earnings-driven rally. Two backtestable strategies
+  ("Fwd P/E Reversion" and "Double Depression") use expanding-window,
+  winsorized z — no lookahead. Coverage: assets in the Bloomberg export.
 - **13F smart-money layer** — from SEC 13F-HR filings via the companion
   [13-Files project](https://pedropeu14.github.io/13-Files/): per asset, how
   many of 38 tracked managers (Buffett, Tepper, Burry, Ackman…) hold it and

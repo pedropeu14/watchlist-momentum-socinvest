@@ -147,6 +147,28 @@ export function mm200Chart(bars, ind, days, width = 860, height = 150) {
   </svg>`;
 }
 
+// Forward P/E weekly series with the asset's own robust mean and ±1σ band.
+// Display is clamped to mean ± 4σ so a dot-com-era outlier can't squash the
+// whole chart into a flat line.
+export function fpeChart(entry, width = 860, height = 150) {
+  if (!entry || entry.sd === null) return "";
+  const cap = entry.mean + 4 * entry.sd;
+  const floor0 = Math.max(0, entry.mean - 4 * entry.sd);
+  const vals = entry.values.map(v => Math.min(Math.max(v, floor0), cap));
+  const lo = Math.min(...vals, entry.mean - entry.sd);
+  const hi = Math.max(...vals, entry.mean + entry.sd);
+  const { x, y } = scales(width, height, vals.length, lo, hi);
+  const line = lv => `<line x1="${M.left}" x2="${width - M.right}" y1="${y(lv)}" y2="${y(lv)}" class="lim"/>
+    <text x="${width - M.right + 4}" y="${y(lv) + 3}" class="ax">${lv.toFixed(1)}</text>`;
+  return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" class="chart">
+    <rect x="${M.left}" y="${y(entry.mean + entry.sd)}" width="${width - M.left - M.right}"
+      height="${Math.abs(y(entry.mean - entry.sd) - y(entry.mean + entry.sd)).toFixed(1)}" class="rsiband"/>
+    ${line(entry.mean + entry.sd)}${line(entry.mean)}${line(entry.mean - entry.sd)}
+    <path d="${pathOf(vals, x, y)}" class="lprice"/>
+    ${dateTicks(entry.dates, x, height)}
+  </svg>`;
+}
+
 export function equityChart(equity, dates, capital0, width = 860, height = 220) {
   if (!equity.length) return "";
   const { x, y, lo, hi } = scales(width, height, equity.length,

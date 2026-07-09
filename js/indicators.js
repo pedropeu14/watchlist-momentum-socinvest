@@ -174,6 +174,36 @@ export function mm200(closes, sma200arr, minObs = 60) {
   return out;
 }
 
+// Forward P/E expanding z aligned to daily bars (weekly source series).
+// As-of join: each bar sees the latest weekly value published on or before
+// its date, and the mean/SD use only values seen so far — no lookahead.
+// Values are winsorized to [2, 100] before entering the statistics: near-zero
+// earnings produce four-digit P/Es (SOX in the dot-com era) that would wreck
+// a naive expanding mean.
+export function fpeExpandingZ(bars, entry, minObs = 52) {
+  if (!entry) return null;
+  const zExp = new Array(bars.date.length).fill(null);
+  const D = entry.dates, V = entry.values;
+  let i = 0, n = 0, sum = 0, sumsq = 0, lastVal = null;
+  for (let b = 0; b < bars.date.length; b++) {
+    const d = bars.date[b];
+    while (i < D.length && D[i] <= d) {
+      let v = V[i];
+      if (v !== null && v !== undefined) {
+        v = Math.min(Math.max(v, 2), 100);
+        n++; sum += v; sumsq += v * v; lastVal = v;
+      }
+      i++;
+    }
+    if (lastVal !== null && n >= minObs) {
+      const m = sum / n;
+      const s = Math.sqrt(Math.max(sumsq / n - m * m, 0));
+      if (s > 0) zExp[b] = (lastVal - m) / s;
+    }
+  }
+  return zExp;
+}
+
 // Convenience bundle: everything the app needs for one asset, computed once.
 export function computeAll(bars) {
   const c = bars.close, v = bars.volume, h = bars.high, l = bars.low;

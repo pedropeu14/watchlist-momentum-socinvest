@@ -3,13 +3,13 @@
 // indicators/signals once per asset, and renders the tabs. All user state
 // (paper trades, portfolio, watchlists, alerts) lives in localStorage.
 
-import { computeAll } from "./indicators.js";
+import { computeAll, fpeExpandingZ } from "./indicators.js";
 import { latestSignal, signalAt, VOTE_NAMES } from "./signals.js";
 import { tradePlan, positionSize } from "./risk.js";
 import { STRATEGIES } from "./strategies.js";
 import { runBacktest, tradesToCsv } from "./backtest.js";
 import * as store from "./store.js";
-import { priceChart, rsiChart, macdChart, mm200Chart, equityChart, sparkline } from "./charts.js";
+import { priceChart, rsiChart, macdChart, mm200Chart, fpeChart, equityChart, sparkline } from "./charts.js";
 import { helpPanel, initHelp } from "./help.js";
 
 // ---------------------------------------------------------------- utilities
@@ -55,9 +55,28 @@ function showModal(html) {
 const ASSETS = new Map();   // ticker -> {meta, bars, ind, sig, plan}
 let MANIFEST = null;
 let F13 = null;             // optional smart-money layer (data/f13.json)
+let FPE = null;             // optional forward P/E layer (data/fpe.json)
 
 const f13Of = ticker => F13?.tickers?.[ticker.replace("/", "-")] ?? null;
 const f13Net = e => e ? (e.opened + e.increased) - (e.decreased + e.closed) : null;
+const fpeOf = ticker => FPE?.tickers?.[ticker] ?? null;
+
+// The MM200 × forward P/E quadrant read: two rulers, one verdict.
+// Thresholds mirror the individual rules: cheap ≤ −1σ, stretched ≥ +1σ.
+function quadrantVerdict(mmz, fz) {
+  if (mmz === null || mmz === undefined || fz === null || fz === undefined) return null;
+  const cheapP = mmz <= -1, richP = mmz >= 1, cheapE = fz <= -1, richE = fz >= 1;
+  if (cheapP && cheapE) return { cls: "BUY", label: "Classic buy zone",
+    text: "Price sits 1σ below its own trend AND the forward multiple is 1σ below its own history — double pessimism. Historically where opportunities (and the worst stresses) concentrate; check the fundamentals story before averaging in." };
+  if (richP && richE) return { cls: "SELL", label: "Classic sell zone",
+    text: "Price stretched above trend AND the multiple re-rated 1σ above its history — the rally is paying today for earnings that haven't arrived. Maximum caution for new money." };
+  if (cheapP && richE) return { cls: "SELL", label: "Possible value trap",
+    text: "Price is depressed but the forward multiple is expensive: projected earnings fell faster than the price did. It looks cheap on the chart and is not — suspicion first." };
+  if (richP && cheapE) return { cls: "BUY", label: "Earnings-driven rally",
+    text: "Price is stretched but the multiple is not: earnings grew into the move. Momentum with valuation support — not automatically a sell." };
+  return { cls: "HOLD", label: "Inside the bands",
+    text: "Neither ruler is at an extreme (both within ±1σ). No quadrant signal — let price and earnings argue it out." };
+}
 
 async function loadAll() {
   MANIFEST = await (await fetch("data/manifest.json", { cache: "no-store" })).json();
@@ -75,6 +94,13 @@ async function loadAll() {
   try {   // smart-money enrichment is optional — the app works without it
     F13 = await (await fetch("data/f13.json", { cache: "no-store" })).json();
   } catch { F13 = null; }
+  try {   // forward P/E enrichment (Bloomberg via Socinvest) — also optional
+    FPE = await (await fetch("data/fpe.json", { cache: "no-store" })).json();
+  } catch { FPE = null; }
+  for (const a of ASSETS.values()) {
+    a.fpe = fpeOf(a.meta.ticker);
+    a.ind.fpeZExp = a.fpe ? fpeExpandingZ(a.bars, a.fpe) : null;
+  }
 
   const lastDates = [...ASSETS.values()].map(a => a.bars.date.at(-1)).sort();
   $("#data-status").textContent =
@@ -108,6 +134,9 @@ function generateAlerts() {
       rsiZone: r === null ? null : r >= 70 ? "hi" : r <= 30 ? "lo" : "mid",
       macdSign: h === null ? null : h >= 0 ? 1 : -1,
       mmZone: z === null ? null : z <= -1 ? "lo" : z >= 1 ? "hi" : "mid",
+      fpeZone: a.fpe?.z == null ? null : a.fpe.z <= -1 ? "lo" : a.fpe.z >= 1 ? "hi" : "mid",
+      quad: (() => { const q = a.fpe ? quadrantVerdict(z, a.fpe.z) : null;
+        return q && q.cls !== "HOLD" ? q.label : null; })(),
     };
     next[ticker] = state;
     const prev = seen?.[ticker];
@@ -127,6 +156,12 @@ function generateAlerts() {
       fresh.push({ ticker, type: "mm200", msg: `${ticker}: dropped 1σ below its MM200 ruler (z=${z.toFixed(2)}) — depressed zone` });
     if (state.mmZone === "hi" && prev.mmZone !== "hi" && prev.mmZone !== null)
       fresh.push({ ticker, type: "mm200", msg: `${ticker}: stretched 1σ above its MM200 ruler (z=${z.toFixed(2)})` });
+    if (state.fpeZone === "lo" && prev.fpeZone !== "lo" && prev.fpeZone != null)
+      fresh.push({ ticker, type: "fpe", msg: `${ticker}: forward P/E dropped 1σ below its own history (z=${a.fpe.z.toFixed(2)}) — multiple cheap` });
+    if (state.fpeZone === "hi" && prev.fpeZone !== "hi" && prev.fpeZone != null)
+      fresh.push({ ticker, type: "fpe", msg: `${ticker}: forward P/E stretched 1σ above its own history (z=${a.fpe.z.toFixed(2)})` });
+    if (state.quad && state.quad !== prev.quad && prev.quad !== undefined)
+      fresh.push({ ticker, type: "quadrant", msg: `${ticker}: entered "${state.quad}" quadrant (MM200 × forward P/E)` });
   }
   store.save("lastSeen", next);
 
@@ -176,6 +211,7 @@ function rowData() {
       close: a.bars.close[i], ccy: a.currency,
       d1: perf(a.bars, 1), m1: perf(a.bars, 21), m3: perf(a.bars, 63),
       rsi: a.ind.rsi14[i], macdH: a.ind.macd.hist[i], mmz: a.ind.mm200.z,
+      fpeZ: a.fpe ? a.fpe.z : null,
       f13: f13Of(a.meta.ticker),
       sig: a.sig, conf: a.sig.action === "HOLD" ? 0 : a.sig.confidence,
       a,
@@ -235,6 +271,7 @@ function renderSignals() {
           <th data-k="close">Close</th><th data-k="d1">1D</th><th data-k="m1">1M</th><th data-k="m3">3M</th>
           <th data-k="rsi">RSI</th><th data-k="macdH">MACD-H</th>
           <th data-k="mmz" title="Distance from the 200-day average, in standard deviations of the asset's own history (Socinvest ruler)">MM200 σ</th>
+          <th data-k="fpeZ" title="Forward P/E vs the asset's own history, in standard deviations (Bloomberg weekly series via Socinvest). ≤ −1σ = multiple historically cheap; ≥ +1σ = expensive.">P/E fwd σ</th>
           <th data-k="f13" title="How many of the 38 tracked 13F managers held this stock at the last disclosed quarter; ▲/▼ = net adds/trims that quarter. 13F data lags up to 45 days.">13F</th>
           <th>Votes</th><th data-k="sigact">Signal</th><th data-k="conf">Conf.</th>
           <th>6M</th><th></th>
@@ -254,6 +291,7 @@ function renderSignals() {
     ticker: r => r.ticker, name: r => r.name, close: r => r.close,
     d1: r => r.d1 ?? -1e9, m1: r => r.m1 ?? -1e9, m3: r => r.m3 ?? -1e9,
     rsi: r => r.rsi ?? -1, macdH: r => r.macdH ?? -1e9, mmz: r => r.mmz ?? -1e9,
+    fpeZ: r => r.fpeZ ?? -1e9,
     f13: r => r.f13 ? r.f13.holders + f13Net(r.f13) / 100 : -1,
     sigact: r => r.sig.action, conf: r => r.conf,
   }[sortState.key] || (r => r.conf);
@@ -276,6 +314,7 @@ function renderSignals() {
       <td>${fmtN(r.rsi, 1)}</td>
       <td class="${pctCls(r.macdH)}">${fmtN(r.macdH, 2)}</td>
       <td class="${r.mmz === null ? "" : r.mmz <= -1 ? "pos" : r.mmz >= 1 ? "neg" : "muted"}">${fmtN(r.mmz, 2)}</td>
+      <td class="${r.fpeZ === null ? "muted" : r.fpeZ <= -1 ? "pos" : r.fpeZ >= 1 ? "neg" : "muted"}">${fmtN(r.fpeZ, 2)}</td>
       <td class="${!r.f13 ? "muted" : f13Net(r.f13) > 0 ? "pos" : f13Net(r.f13) < 0 ? "neg" : "muted"}">${r.f13 ? r.f13.holders + (f13Net(r.f13) > 0 ? " ▲" : f13Net(r.f13) < 0 ? " ▼" : "") : "—"}</td>
       <td><span class="votes">${dots}</span></td>
       <td><span class="sig ${r.sig.action}">${r.sig.action}${r.sig.strength ? " · " + r.sig.strength : ""}</span></td>
@@ -329,6 +368,7 @@ function openDetail(ticker) {
     <h3>RSI 14</h3>${rsiChart(a.bars, a.ind, 252)}
     <h3>MACD 12/26/9</h3>${macdChart(a.bars, a.ind, 252)}
     ${mm200Section(a, sym)}
+    ${fpeSection(a)}
     ${f13Section(a)}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
       <div><h3>Indicator votes</h3><table>${voteRows}</table></div>
@@ -366,6 +406,30 @@ function mm200Section(a, sym) {
       Ruler built from ~${years}y of this asset's own ratio history — trending assets can
       still stay beyond ±1σ for months; backtest "MM200 Reversion" before trusting the rule here.
     </div>`;
+}
+
+// Forward P/E block inside the detail modal, incl. the quadrant verdict.
+function fpeSection(a) {
+  const e = a.fpe;
+  if (!e || e.z === null) return "";
+  const zone = e.z <= -1 ? '<span class="sig BUY">−1σ (multiple cheap)</span>'
+    : e.z >= 1 ? '<span class="sig SELL">+1σ (multiple expensive)</span>'
+    : '<span class="sig HOLD">inside the band</span>';
+  const v = quadrantVerdict(a.ind.mm200.z, e.z);
+  return `
+    <h3>Forward P/E — multiple vs its own history ${zone}</h3>
+    ${fpeChart(e)}
+    <div class="muted" style="font-size:12px;margin:4px 0 0">
+      Forward P/E = <strong>${e.last.toFixed(1)}×</strong> (${e.last_date}) ·
+      ${e.robust ? "robust " : ""}historical mean ${e.mean.toFixed(1)} ± ${e.sd.toFixed(1)} (1σ) over ${e.n} weekly points ·
+      z-score = <strong>${e.z.toFixed(2)}</strong>.
+      Bloomberg series via the Socinvest project. The denominator is <em>projected</em> consensus earnings —
+      the z moves on estimate revisions, not only on price.
+    </div>
+    ${v ? `<div class="banner" style="margin-top:10px">
+      <span class="sig ${v.cls}">${v.label}</span>&nbsp; <strong>MM200 ${fmtN(a.ind.mm200.z, 2)}σ × Fwd P/E ${fmtN(e.z, 2)}σ.</strong>
+      ${v.text} Backtest "Double Depression" on this asset to see how the buy quadrant actually paid.
+    </div>` : ""}`;
 }
 
 // Smart-money (13F) block inside the detail modal.
@@ -417,7 +481,20 @@ function renderBacktest() {
     <div id="bt-out"></div>`;
 
   const descr = () => { $("#bt-desc").textContent = STRATEGIES[$("#bt-strategy").value].describe; };
-  $("#bt-strategy").onchange = descr; descr();
+  // strategies that need forward P/E coverage are disabled for assets without it
+  const gateOptions = () => {
+    const a = ASSETS.get($("#bt-ticker").value);
+    [...$("#bt-strategy").options].forEach(o => {
+      const s = STRATEGIES[o.value];
+      o.disabled = s.requires === "fpe" && !a.ind.fpeZExp;
+      o.textContent = s.label + (o.disabled ? " (no fwd P/E data)" : "");
+    });
+    if ($("#bt-strategy").selectedOptions[0]?.disabled) $("#bt-strategy").value = "momentum";
+    descr();
+  };
+  $("#bt-strategy").onchange = descr;
+  $("#bt-ticker").onchange = gateOptions;
+  gateOptions();
   $("#bt-run").onclick = () => {
     const a = ASSETS.get($("#bt-ticker").value);
     const res = runBacktest(a.bars, a.ind, STRATEGIES[$("#bt-strategy").value], {
@@ -487,7 +564,11 @@ function renderStrategies() {
   $("#st-run").onclick = () => {
     const a = ASSETS.get($("#st-ticker").value);
     const days = +$("#st-days").value;
-    const results = Object.entries(STRATEGIES).map(([k, s]) =>
+    const available = Object.entries(STRATEGIES)
+      .filter(([, s]) => !(s.requires === "fpe" && !a.ind.fpeZExp));
+    const skippedNote = available.length < Object.keys(STRATEGIES).length
+      ? `<div class="muted" style="margin-top:8px">Fwd P/E strategies skipped: no Bloomberg forward P/E coverage for ${a.meta.ticker}.</div>` : "";
+    const results = available.map(([k, s]) =>
       ({ key: k, label: s.label,
          res: runBacktest(a.bars, a.ind, s, { days, fractional: a.meta.group === "index" }) }))
       .filter(r => r.res);
@@ -519,6 +600,7 @@ function renderStrategies() {
         <td>${m.sharpe === null ? "—" : m.sharpe.toFixed(2)}</td></tr>`; }).join("")}
       ${ensembleRow}</tbody></table></div>
       <div class="muted" style="margin-top:8px">Same engine, same window, same no-lookahead execution for every strategy. A strategy that doesn't beat Buy & Hold after drawdown isn't earning its complexity.</div>
+      ${skippedNote}
     </div>`;
   };
 }
@@ -848,8 +930,10 @@ function sectorPerf() {
       return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
     };
     const leader = [...list].sort((x, y) => (perf(y.bars, 21) ?? -1e9) - (perf(x.bars, 21) ?? -1e9))[0];
+    const fz = list.map(a => a.fpe?.z).filter(v => v !== null && v !== undefined).sort((x, y) => x - y);
+    const fpeMed = fz.length ? fz[Math.floor(fz.length / 2)] : null;
     return { sector, count: list.length, w1: avg(5), m1: avg(21), m3: avg(63),
-             leader: leader.meta.ticker, list };
+             leader: leader.meta.ticker, fpeMed, fpeN: fz.length, list };
   });
 }
 
@@ -874,12 +958,14 @@ function renderSectors() {
         </div>`).join("")}</div>
     </div>
     <div class="panel"><div class="tablewrap"><table>
-      <thead><tr><th class="l">Sector</th><th>Assets</th><th>1W avg</th><th>1M avg</th><th>3M avg</th><th class="l">1M leader</th></tr></thead>
+      <thead><tr><th class="l">Sector</th><th>Assets</th><th>1W avg</th><th>1M avg</th><th>3M avg</th>
+        <th title="Median forward P/E z-score of members with Bloomberg coverage">Fwd P/E σ (med)</th><th class="l">1M leader</th></tr></thead>
       <tbody>${sectors.map(s => `<tr>
         <td class="l">${esc(s.sector)}</td><td>${s.count}</td>
         <td class="${pctCls(s.w1)}">${fmtPct(s.w1)}</td>
         <td class="${pctCls(s.m1)}">${fmtPct(s.m1)}</td>
         <td class="${pctCls(s.m3)}">${fmtPct(s.m3)}</td>
+        <td class="${s.fpeMed === null ? "muted" : s.fpeMed <= -1 ? "pos" : s.fpeMed >= 1 ? "neg" : "muted"}">${s.fpeMed === null ? "—" : fmtN(s.fpeMed, 2) + " (" + s.fpeN + ")"}</td>
         <td class="l">${s.leader}</td></tr>`).join("")}</tbody>
     </table></div></div>
     <div id="sector-detail"></div>`;

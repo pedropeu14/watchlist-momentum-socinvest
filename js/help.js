@@ -25,6 +25,7 @@ const HELP = {
         <tr><td>RSI</td><td>Relative Strength Index (14 days), 0–100. Above 70 = overbought territory, below 30 = oversold. Between 55–70 it confirms upward momentum; extremes are exhaustion warnings, not buy/sell triggers by themselves.</td></tr>
         <tr><td>MACD-H</td><td>MACD histogram: the gap between the MACD line (EMA12 − EMA26) and its 9-day signal line. Positive and growing = accelerating up-move; negative and growing = accelerating down-move.</td></tr>
         <tr><td>MM200 σ</td><td>The Socinvest ruler: price ÷ its 200-day average, z-scored against that asset's own ~10-year history. <strong>−1σ or lower (green)</strong> = statistically depressed; <strong>+1σ or higher (red)</strong> = stretched. A mean-reversion lens — the opposite of momentum — so treat it as context and backtest "MM200 Reversion" before trading it.</td></tr>
+        <tr><td>P/E fwd σ</td><td>The same Socinvest ruler applied to <strong>valuation</strong>: the forward P/E (price ÷ projected consensus earnings, weekly Bloomberg series) z-scored against that asset's own history. <strong>Green ≤ −1σ</strong> = multiple historically cheap; <strong>red ≥ +1σ</strong> = expensive. Crossed with MM200 σ it forms the <em>quadrant verdict</em> shown in the detail view — the pair separates rallies driven by earnings from rallies driven by re-rating. Caveat: the denominator is a <em>projection</em>; estimate revisions move this z without the price moving. Coverage: the assets present in the Bloomberg export (~25); others show "—".</td></tr>
         <tr><td>13F</td><td>How many of the <strong>38 tracked institutional managers</strong> (Buffett, Tepper, Burry, Ackman, Klarman…) held the stock at the last disclosed quarter, from SEC 13F-HR filings via the 13-Files project. ▲ = more managers opened/increased than trimmed/closed that quarter; ▼ = the opposite. <em>13F data lags up to 45 days</em> — it tells you what smart money did, not what it's doing. Click the row for the full holder list.</td></tr>
         <tr><td>Votes</td><td>Six dots, in fixed order: ① SMA trend 20/50 · ② long trend 50/200 · ③ EMA cross 12/26 · ④ RSI regime · ⑤ MACD · ⑥ Bollinger confirmed by Volume/OBV. Green = bullish, red = bearish, grey = neutral.</td></tr>
         <tr><td>Signal</td><td>BUY when bullish votes exceed bearish by ≥3; SELL is the mirror. Strength counts the aligned votes.</td></tr>
@@ -93,6 +94,8 @@ const HELP = {
         <tr><td>Mean Reversion</td><td>Buys panic: RSI(14) below 30 <em>and</em> close under the lower Bollinger band (skipped if price has collapsed far below its 200-day trend — no falling knives). Exits at the middle band or RSI &gt; 55. ATR stops on.</td></tr>
         <tr><td>Breakout</td><td>Buys a close above the previous 55-day high on volume ≥1.3× its 20-day average; exits on a close below the previous 20-day low. ATR stops on. Classic Donchian/turtle logic.</td></tr>
         <tr><td>MM200 Reversion</td><td>The Socinvest ±1σ rule, pure: buy when the MM200 z-score ≤ −1, sell when ≥ +1. No stops. The z-score is computed with an <em>expanding window</em> (only data available up to each day) — the full-history ruler shown elsewhere would leak the future into the past and flatter the results.</td></tr>
+        <tr><td>Fwd P/E Reversion</td><td>The same ±1σ rule on the <strong>forward multiple</strong>: buy when the forward P/E sits 1σ below the asset's own history, sell at 1σ above. Expanding-window z, winsorized to P/E 2–100 (near-zero earnings produce absurd multiples that would wreck the statistics). Only available for assets with Bloomberg coverage.</td></tr>
+        <tr><td>Double Depression</td><td>The quadrant <em>buy zone</em>, mechanized: enter only when BOTH rulers are ≤ −1σ (price depressed and multiple cheap), exit when either stretches to +1σ. The strictest — and rarest — signal in the app; expect few trades, which is the point.</td></tr>
         <tr><td>Buy & Hold</td><td>Buys the first tradable bar, never sells. The benchmark: any active strategy that loses to it after drawdown isn't earning its complexity.</td></tr>
         <tr><td>Ensemble</td><td>Capital split equally across the active strategies — shows whether diversifying <em>rules</em> (not assets) smooths the ride.</td></tr>
       </table>
@@ -204,6 +207,8 @@ const HELP = {
         <tr><td>macd</td><td>The MACD histogram changed sign — an early momentum-direction flip.</td></tr>
         <tr><td>volume</td><td>Daily volume exceeded 2× its 20-day average — something happened, find out what.</td></tr>
         <tr><td>mm200</td><td>The asset entered the −1σ zone (statistically depressed) or the +1σ zone (stretched) of its MM200 ruler.</td></tr>
+        <tr><td>fpe</td><td>The forward P/E crossed 1σ below (cheap) or above (expensive) the asset's own multiple history.</td></tr>
+        <tr><td>quadrant</td><td>The MM200 × forward P/E pair entered a named quadrant — "Classic buy zone", "Classic sell zone", "Possible value trap" or "Earnings-driven rally".</td></tr>
         <tr><td>paper</td><td>One of your paper positions hit its stop or target during the data refresh.</td></tr>
       </table>
       <ul>
@@ -235,6 +240,8 @@ const HELP = {
       The 13F smart-money layer comes from SEC 13F-HR filings via the 13-Files project
       (pedropeu14.github.io/13-Files); CUSIP→ticker mappings are verified by comparing each filing's implied
       price against the real quarter-end close — unverifiable names are dropped, never guessed.
+      The forward P/E layer is a weekly Bloomberg series exported by the Socinvest project
+      (pedropeu14.github.io/Socinvest) — it refreshes when that project does (manual), not daily.
       Every number shown traces to a real exchange close — when a source doesn't exist (ARA, delisted 2021),
       the asset is shown as unavailable rather than filled with synthetic data.</p>
       <p class="help-caveat">Also read "What this app deliberately does NOT do" below — knowing a tool's limits

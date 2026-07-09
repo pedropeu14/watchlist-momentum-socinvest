@@ -34,6 +34,10 @@ jobs:
         run: python scripts/build_13f.py || echo "13F refresh failed — keeping previous data/f13.json"
         continue-on-error: true
 
+      - name: Refresh forward P/E layer (optional enrichment, Socinvest source)
+        run: python scripts/build_fpe.py || echo "fwd P/E refresh failed — keeping previous data/fpe.json"
+        continue-on-error: true
+
       - name: Fetch EOD data (Yahoo Finance, stdlib only)
         run: python scripts/fetch_data.py
 
