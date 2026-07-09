@@ -1,7 +1,8 @@
 # Watchlist Momentum — Socinvest
 
-End-of-day signal scanner, backtester and paper-trading simulator for a fixed
-29-asset universe. Pure static site (vanilla JS, zero dependencies, no build
+End-of-day signal scanner, backtester and paper-trading simulator for a
+curated 76-asset universe (the original 29 plus the stocks held by ≥3 of the
+38 institutional managers tracked by the companion 13-Files project). Pure static site (vanilla JS, zero dependencies, no build
 step) designed for GitHub Pages, with a Python-stdlib data pipeline refreshed
 daily by GitHub Actions.
 

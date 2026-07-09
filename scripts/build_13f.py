@@ -48,7 +48,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 SEC_HEADERS = {"User-Agent": os.environ.get(
     "SEC_USER_AGENT", "Pedro Amorim pedrof.amorim@gmail.com")}
 PRICE_TOLERANCE = 0.12     # implied vs real close, relative
-MIN_HOLDERS_PICK = 4       # consensus picks: held by at least N managers
+MIN_HOLDERS_PICK = 3       # consensus picks: held by at least N managers
 MAX_PICKS = 30
 
 STOPWORDS = {"INC", "CORP", "CORPORATION", "INCORPORATED", "CO", "COMPANY",
@@ -59,7 +59,7 @@ STOPWORDS = {"INC", "CORP", "CORPORATION", "INCORPORATED", "CO", "COMPANY",
 
 # Same company, different share class of a name already in the universe —
 # mapped and shown, but never proposed as a "new pick".
-SAME_COMPANY = {"GOOG", "BRK-A", "BRK-B"}
+SAME_COMPANY = {"GOOG", "BRK-A", "BRK-B", "LLYVK", "FWONK"}
 
 # Name matching fails on a few (renames, word games); candidates listed here
 # still go through the same price verification — a wrong guess is rejected.

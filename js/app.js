@@ -1191,17 +1191,23 @@ async function boot() {
   renderActive();
 }
 
-// One-time: materialize a "13F Picks" watchlist with the consensus picks.
-// Seeded once — if the user later deletes or edits it, we respect that.
+// One-time (per seed version): materialize a "13F Picks" watchlist with every
+// universe asset that entered via 13F consensus. Merges new names into an
+// existing list; after the seed, the list is the user's to edit or delete.
 function seed13fWatchlist() {
-  if (!F13?.picks?.length || store.load("wl13fSeeded", false)) return;
+  if (store.load("wl13fSeeded_v2", false)) return;
+  const picks = [...ASSETS.values()]
+    .filter(a => a.meta.via === "13F").map(a => a.meta.ticker);
+  if (!picks.length) return;
   const lists = watchlists();
-  if (!lists.some(w => w.id === "13f")) {
-    lists.push({ id: "13f", name: "13F Picks", color: "#8e44ad",
-      tickers: F13.picks.filter(t => ASSETS.has(t)), notes: {} });
-    store.save("watchlists", lists);
+  let wl = lists.find(w => w.id === "13f");
+  if (!wl) {
+    wl = { id: "13f", name: "13F Picks", color: "#8e44ad", tickers: [], notes: {} };
+    lists.push(wl);
   }
-  store.save("wl13fSeeded", true);
+  for (const t of picks) if (!wl.tickers.includes(t)) wl.tickers.push(t);
+  store.save("watchlists", lists);
+  store.save("wl13fSeeded_v2", true);
 }
 
 boot();
