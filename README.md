@@ -45,6 +45,15 @@ Same pattern as a data pipeline: fetch once, serve snapshots.
   asset's own history. Shown as a signals column, as a banded chart in the
   detail view, and as ±1σ crossing alerts. The backtestable strategy uses an
   expanding-window z (no lookahead), unlike the display ruler.
+- **13F smart-money layer** — from SEC 13F-HR filings via the companion
+  [13-Files project](https://pedropeu14.github.io/13-Files/): per asset, how
+  many of 38 tracked managers (Buffett, Tepper, Burry, Ackman…) hold it and
+  what they did last quarter. Signals column, holder list in the detail view,
+  and a seeded "13F Picks" watchlist with the consensus names (held by ≥4
+  managers). `scripts/build_13f.py` maps CUSIPs to tickers and **verifies
+  every mapping** by comparing the filing's implied price (value ÷ shares)
+  against the real quarter-end close — unverifiable names are dropped.
+  13F data lags up to 45 days by construction; the UI says so.
 - **Paper trading** — $10k virtual account. Fills at last EOD close;
   stops/targets honored against subsequent daily bars on each data refresh.
 - **Portfolio** — track real holdings (localStorage only, never uploaded):

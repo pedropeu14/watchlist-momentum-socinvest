@@ -34,6 +34,21 @@
     { "ticker": "BNT",    "yahoo": "BNT",      "name": "Brookfield Wealth Solutions Ltd.","sector": "Financials", "group": "stock",
       "note": "BNT on NYSE is Brookfield Wealth Solutions (formerly Brookfield Reinsurance). If you meant BioNTech, that is BNTX." },
     { "ticker": "VRT",    "yahoo": "VRT",      "name": "Vertiv Holdings Co",             "sector": "Industrials", "group": "stock",
-      "note": "VRT is Vertiv (data-center infrastructure). Virtus Investment Partners, named in the request, trades as VRTS." }
-  ]
+      "note": "VRT is Vertiv (data-center infrastructure). Virtus Investment Partners, named in the request, trades as VRTS." },
+
+    { "ticker": "V",      "yahoo": "V",        "name": "Visa Inc.",                      "sector": "Financials",  "group": "stock", "via": "13F" },
+    { "ticker": "MA",     "yahoo": "MA",       "name": "Mastercard Incorporated",        "sector": "Financials",  "group": "stock", "via": "13F" },
+    { "ticker": "MCO",    "yahoo": "MCO",      "name": "Moody's Corporation",            "sector": "Financials",  "group": "stock", "via": "13F" },
+    { "ticker": "UBER",   "yahoo": "UBER",     "name": "Uber Technologies, Inc.",        "sector": "Technology",  "group": "stock", "via": "13F" },
+    { "ticker": "FERG",   "yahoo": "FERG",     "name": "Ferguson Enterprises Inc.",      "sector": "Industrials", "group": "stock", "via": "13F" },
+    { "ticker": "GE",     "yahoo": "GE",       "name": "GE Aerospace",                   "sector": "Industrials", "group": "stock", "via": "13F" },
+    { "ticker": "QSR",    "yahoo": "QSR",      "name": "Restaurant Brands International","sector": "Consumer",    "group": "stock", "via": "13F" },
+    { "ticker": "APP",    "yahoo": "APP",      "name": "AppLovin Corporation",           "sector": "Technology",  "group": "stock", "via": "13F" },
+    { "ticker": "AVGO",   "yahoo": "AVGO",     "name": "Broadcom Inc.",                  "sector": "Technology",  "group": "stock", "via": "13F" },
+    { "ticker": "CIEN",   "yahoo": "CIEN",     "name": "Ciena Corporation",              "sector": "Technology",  "group": "stock", "via": "13F" },
+    { "ticker": "LRCX",   "yahoo": "LRCX",     "name": "Lam Research Corporation",       "sector": "Technology",  "group": "stock", "via": "13F" },
+    { "ticker": "CRM",    "yahoo": "CRM",      "name": "Salesforce, Inc.",               "sector": "Technology",  "group": "stock", "via": "13F" },
+    { "ticker": "DIS",    "yahoo": "DIS",      "name": "The Walt Disney Company",        "sector": "Consumer",    "group": "stock", "via": "13F" }
+  ],
+  "_via_13F": "Consensus picks from the 13-Files project (pedropeu14.github.io/13-Files): stocks held by >=4 of the 38 tracked managers at the latest quarter, mapped by scripts/build_13f.py and verified by implied-vs-real price. Curated by hand — build_13f.py proposes, a human disposes."
 }

@@ -25,6 +25,7 @@ const HELP = {
         <tr><td>RSI</td><td>Relative Strength Index (14 days), 0–100. Above 70 = overbought territory, below 30 = oversold. Between 55–70 it confirms upward momentum; extremes are exhaustion warnings, not buy/sell triggers by themselves.</td></tr>
         <tr><td>MACD-H</td><td>MACD histogram: the gap between the MACD line (EMA12 − EMA26) and its 9-day signal line. Positive and growing = accelerating up-move; negative and growing = accelerating down-move.</td></tr>
         <tr><td>MM200 σ</td><td>The Socinvest ruler: price ÷ its 200-day average, z-scored against that asset's own ~10-year history. <strong>−1σ or lower (green)</strong> = statistically depressed; <strong>+1σ or higher (red)</strong> = stretched. A mean-reversion lens — the opposite of momentum — so treat it as context and backtest "MM200 Reversion" before trading it.</td></tr>
+        <tr><td>13F</td><td>How many of the <strong>38 tracked institutional managers</strong> (Buffett, Tepper, Burry, Ackman, Klarman…) held the stock at the last disclosed quarter, from SEC 13F-HR filings via the 13-Files project. ▲ = more managers opened/increased than trimmed/closed that quarter; ▼ = the opposite. <em>13F data lags up to 45 days</em> — it tells you what smart money did, not what it's doing. Click the row for the full holder list.</td></tr>
         <tr><td>Votes</td><td>Six dots, in fixed order: ① SMA trend 20/50 · ② long trend 50/200 · ③ EMA cross 12/26 · ④ RSI regime · ⑤ MACD · ⑥ Bollinger confirmed by Volume/OBV. Green = bullish, red = bearish, grey = neutral.</td></tr>
         <tr><td>Signal</td><td>BUY when bullish votes exceed bearish by ≥3; SELL is the mirror. Strength counts the aligned votes.</td></tr>
         <tr><td>Conf.</td><td>Confidence = (aligned votes − ½ × opposing votes) ÷ 6. A 4-vote BUY with 2 votes against scores lower than a clean 4-0.</td></tr>
@@ -175,9 +176,10 @@ const HELP = {
   watchlists: {
     q: "What are watchlists for?",
     html: `
-      <p>Organize the 29-asset universe by <em>your</em> logic — time horizon, theme, conviction. Four starter
-      lists are provided (Day Trading, Swing Trading, Long Term, My Favorites); create as many as you want,
-      each with its own color.</p>
+      <p>Organize the universe by <em>your</em> logic — time horizon, theme, conviction. Starter lists are
+      provided (Day Trading, Swing Trading, Long Term, My Favorites, plus <strong>13F Picks</strong> — the
+      stocks most held by the 38 tracked institutional managers, seeded once and yours to edit); create as
+      many as you want, each with its own color.</p>
       <ul>
         <li><strong>Add</strong> tickers from the dropdown in each list; <strong>drag</strong> a ticker between lists to move it (its note travels along).</li>
         <li>Use <strong>✎</strong> to attach a note — e.g. <em>why</em> you're watching it and at what price it gets interesting. Future-you will thank you; the note shows in the row and on hover.</li>
@@ -230,6 +232,9 @@ const HELP = {
       <h4>Market data</h4>
       <p>Prices are end-of-day from Yahoo Finance, ~10 years per asset, refreshed once per trading day by a
       GitHub Actions job (weekdays 22:30 UTC, after the US close) that commits the JSONs this site reads.
+      The 13F smart-money layer comes from SEC 13F-HR filings via the 13-Files project
+      (pedropeu14.github.io/13-Files); CUSIP→ticker mappings are verified by comparing each filing's implied
+      price against the real quarter-end close — unverifiable names are dropped, never guessed.
       Every number shown traces to a real exchange close — when a source doesn't exist (ARA, delisted 2021),
       the asset is shown as unavailable rather than filled with synthetic data.</p>
       <p class="help-caveat">Also read "What this app deliberately does NOT do" below — knowing a tool's limits

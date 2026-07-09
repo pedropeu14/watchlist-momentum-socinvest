@@ -54,6 +54,10 @@ function showModal(html) {
 
 const ASSETS = new Map();   // ticker -> {meta, bars, ind, sig, plan}
 let MANIFEST = null;
+let F13 = null;             // optional smart-money layer (data/f13.json)
+
+const f13Of = ticker => F13?.tickers?.[ticker.replace("/", "-")] ?? null;
+const f13Net = e => e ? (e.opened + e.increased) - (e.decreased + e.closed) : null;
 
 async function loadAll() {
   MANIFEST = await (await fetch("data/manifest.json", { cache: "no-store" })).json();
@@ -68,6 +72,9 @@ async function loadAll() {
     ASSETS.set(meta.ticker, { meta, bars, ind, sig, plan, currency: raw.currency });
   });
   await Promise.all(jobs);
+  try {   // smart-money enrichment is optional — the app works without it
+    F13 = await (await fetch("data/f13.json", { cache: "no-store" })).json();
+  } catch { F13 = null; }
 
   const lastDates = [...ASSETS.values()].map(a => a.bars.date.at(-1)).sort();
   $("#data-status").textContent =
@@ -169,6 +176,7 @@ function rowData() {
       close: a.bars.close[i], ccy: a.currency,
       d1: perf(a.bars, 1), m1: perf(a.bars, 21), m3: perf(a.bars, 63),
       rsi: a.ind.rsi14[i], macdH: a.ind.macd.hist[i], mmz: a.ind.mm200.z,
+      f13: f13Of(a.meta.ticker),
       sig: a.sig, conf: a.sig.action === "HOLD" ? 0 : a.sig.confidence,
       a,
     };
@@ -227,6 +235,7 @@ function renderSignals() {
           <th data-k="close">Close</th><th data-k="d1">1D</th><th data-k="m1">1M</th><th data-k="m3">3M</th>
           <th data-k="rsi">RSI</th><th data-k="macdH">MACD-H</th>
           <th data-k="mmz" title="Distance from the 200-day average, in standard deviations of the asset's own history (Socinvest ruler)">MM200 σ</th>
+          <th data-k="f13" title="How many of the 38 tracked 13F managers held this stock at the last disclosed quarter; ▲/▼ = net adds/trims that quarter. 13F data lags up to 45 days.">13F</th>
           <th>Votes</th><th data-k="sigact">Signal</th><th data-k="conf">Conf.</th>
           <th>6M</th><th></th>
         </tr></thead><tbody></tbody>
@@ -245,6 +254,7 @@ function renderSignals() {
     ticker: r => r.ticker, name: r => r.name, close: r => r.close,
     d1: r => r.d1 ?? -1e9, m1: r => r.m1 ?? -1e9, m3: r => r.m3 ?? -1e9,
     rsi: r => r.rsi ?? -1, macdH: r => r.macdH ?? -1e9, mmz: r => r.mmz ?? -1e9,
+    f13: r => r.f13 ? r.f13.holders + f13Net(r.f13) / 100 : -1,
     sigact: r => r.sig.action, conf: r => r.conf,
   }[sortState.key] || (r => r.conf);
   list = [...list].sort((a, b) => {
@@ -266,6 +276,7 @@ function renderSignals() {
       <td>${fmtN(r.rsi, 1)}</td>
       <td class="${pctCls(r.macdH)}">${fmtN(r.macdH, 2)}</td>
       <td class="${r.mmz === null ? "" : r.mmz <= -1 ? "pos" : r.mmz >= 1 ? "neg" : "muted"}">${fmtN(r.mmz, 2)}</td>
+      <td class="${!r.f13 ? "muted" : f13Net(r.f13) > 0 ? "pos" : f13Net(r.f13) < 0 ? "neg" : "muted"}">${r.f13 ? r.f13.holders + (f13Net(r.f13) > 0 ? " ▲" : f13Net(r.f13) < 0 ? " ▼" : "") : "—"}</td>
       <td><span class="votes">${dots}</span></td>
       <td><span class="sig ${r.sig.action}">${r.sig.action}${r.sig.strength ? " · " + r.sig.strength : ""}</span></td>
       <td>${r.sig.action === "HOLD" ? "—" : r.conf + "%"}</td>
@@ -318,6 +329,7 @@ function openDetail(ticker) {
     <h3>RSI 14</h3>${rsiChart(a.bars, a.ind, 252)}
     <h3>MACD 12/26/9</h3>${macdChart(a.bars, a.ind, 252)}
     ${mm200Section(a, sym)}
+    ${f13Section(a)}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
       <div><h3>Indicator votes</h3><table>${voteRows}</table></div>
       <div><h3>ATR trade plan (long)</h3>
@@ -353,6 +365,29 @@ function mm200Section(a, sym) {
       At today's SMA200, −1σ ≈ ${sym}${fmtN(buyLvl)} and +1σ ≈ ${sym}${fmtN(sellLvl)}.
       Ruler built from ~${years}y of this asset's own ratio history — trending assets can
       still stay beyond ±1σ for months; backtest "MM200 Reversion" before trusting the rule here.
+    </div>`;
+}
+
+// Smart-money (13F) block inside the detail modal.
+function f13Section(a) {
+  const e = f13Of(a.meta.ticker);
+  if (!e || !F13) return "";
+  const net = f13Net(e);
+  const actCls = { opened: "pos", increased: "pos", decreased: "neg", closed: "neg", held: "muted" };
+  const rows = e.managers.map(m => `<tr>
+    <td class="l">${esc(m.name)}</td>
+    <td>${m.pct === null ? "—" : (m.pct * 100).toFixed(1) + "% of book"}</td>
+    <td class="l ${actCls[m.action] || "muted"}">${m.action}</td></tr>`).join("");
+  return `
+    <h3>Smart money — 13F holders as of ${F13.as_of}
+      <span class="pill">${e.holders} of ${F13.managers_tracked} managers</span>
+      ${net ? `<span class="${net > 0 ? "pos" : "neg"}">net ${net > 0 ? "+" : ""}${net} last quarter</span>` : ""}</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th class="l">Manager</th><th>Position weight</th><th class="l">Last quarter</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <div class="muted" style="font-size:12px;margin:4px 0 0">
+      Source: SEC 13F-HR filings via the 13-Files project. Disclosed up to <strong>45 days after</strong>
+      quarter end — these positions may already have changed. Long US-equity positions only.
     </div>`;
 }
 
@@ -1150,9 +1185,23 @@ async function boot() {
       (<code>python -m http.server</code>). Error: ${esc(e.message)}</div>`;
     return;
   }
+  seed13fWatchlist();
   paperCheckStops();
   generateAlerts();
   renderActive();
+}
+
+// One-time: materialize a "13F Picks" watchlist with the consensus picks.
+// Seeded once — if the user later deletes or edits it, we respect that.
+function seed13fWatchlist() {
+  if (!F13?.picks?.length || store.load("wl13fSeeded", false)) return;
+  const lists = watchlists();
+  if (!lists.some(w => w.id === "13f")) {
+    lists.push({ id: "13f", name: "13F Picks", color: "#8e44ad",
+      tickers: F13.picks.filter(t => ASSETS.has(t)), notes: {} });
+    store.save("watchlists", lists);
+  }
+  store.save("wl13fSeeded", true);
 }
 
 boot();

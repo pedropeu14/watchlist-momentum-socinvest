@@ -94,6 +94,8 @@ def main() -> int:
         entry = {k: asset[k] for k in ("ticker", "name", "sector", "group")}
         if asset.get("note"):
             entry["note"] = asset["note"]
+        if asset.get("via"):
+            entry["via"] = asset["via"]
         entry["yahoo"] = asset["yahoo"]
 
         if not asset["yahoo"]:
