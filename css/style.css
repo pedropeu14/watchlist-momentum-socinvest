@@ -15,14 +15,17 @@
   color-scheme: dark;
 }
 html[data-theme="light"] {
-  --bg: #f3f5f9;
+  --bg: #ffffff;
   --panel: #ffffff;
-  --panel2: #eef1f7;
-  --border: #d7dde8;
+  --panel2: #f3f5f9;
+  --border: #dde3ee;
   --text: #1b2334;
   --muted: #5b6678;
   color-scheme: light;
 }
+/* heatmap tiles use translucent fills — white text is unreadable on them in light mode */
+html[data-theme="light"] .tile { color: var(--text); }
+html[data-theme="light"] .toast { box-shadow: 0 6px 24px rgba(30,40,70,.18); }
 
 * { box-sizing: border-box; }
 body {

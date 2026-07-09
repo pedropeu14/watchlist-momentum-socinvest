@@ -33,7 +33,7 @@ export function importAll(dump) {
 }
 
 export const DEFAULT_SETTINGS = {
-  theme: "dark",
+  theme: "light",
   paperCapital: 10000,
   riskPct: 2,
   minVotes: 3,
