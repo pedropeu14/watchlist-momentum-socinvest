@@ -79,6 +79,21 @@ export const STRATEGIES = {
     useStops: false,
   },
 
+  quadrantPosition: {
+    label: "Quadrant Position (0-cut)",
+    describe: "The sign-based map, mechanized: buy while the asset sits in the cheap & depressed quadrant (MM200 z AND forward P/E z both below zero — the Socinvest scatter's bottom-left), sell when it reaches expensive & stretched (both above zero). Much softer thresholds than Double Depression, so it trades far more and filters far less — compare the two to see what the ±1σ strictness is actually worth. Expanding-window z, no stops.",
+    requires: "fpe",
+    enter(ind, bars, i) {
+      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      return m !== null && f !== null && f !== undefined && m < 0 && f < 0;
+    },
+    exit(ind, bars, i) {
+      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      return m !== null && f !== null && f !== undefined && m > 0 && f > 0;
+    },
+    useStops: false,
+  },
+
   doubleDepression: {
     label: "Double Depression (MM200 + Fwd P/E)",
     describe: "The quadrant buy zone, mechanized: enter when BOTH the MM200 z-score and the forward P/E z-score are at or below −1σ (price depressed AND multiple cheap vs their own histories); exit when either ruler stretches to +1σ. No stops — the pure quadrant rule.",
