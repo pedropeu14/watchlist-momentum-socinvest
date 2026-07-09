@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Watchlist Momentum — Socinvest: EOD signal scanner, backtester and paper-trading simulator. Educational tool, not investment advice.">
+<title>Watchlist Momentum — Socinvest</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">📈 Watchlist Momentum <span>Socinvest</span></div>
+  <div id="data-status" class="data-status">loading…</div>
+  <button id="theme-toggle" class="btn ghost" title="Toggle theme">🌓</button>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="signals" class="active">Signals</button>
+  <button data-tab="backtest">Backtest</button>
+  <button data-tab="strategies">Strategies</button>
+  <button data-tab="paper">Paper Trading</button>
+  <button data-tab="portfolio">Portfolio</button>
+  <button data-tab="sectors">Sectors</button>
+  <button data-tab="watchlists">Watchlists</button>
+  <button data-tab="alerts">Alerts <span id="alert-badge" class="badge hidden"></span></button>
+  <button data-tab="settings">Settings</button>
+</nav>
+
+<main id="main">
+  <section id="tab-signals" class="tab active"></section>
+  <section id="tab-backtest" class="tab"></section>
+  <section id="tab-strategies" class="tab"></section>
+  <section id="tab-paper" class="tab"></section>
+  <section id="tab-portfolio" class="tab"></section>
+  <section id="tab-sectors" class="tab"></section>
+  <section id="tab-watchlists" class="tab"></section>
+  <section id="tab-alerts" class="tab"></section>
+  <section id="tab-settings" class="tab"></section>
+</main>
+
+<div id="modal-root" class="hidden"></div>
+<div id="toasts"></div>
+
+<footer class="disclaimer">
+  End-of-day data via Yahoo Finance, refreshed once per trading day by CI — this is <strong>not</strong> real-time.
+  Signals and backtests are statistical tools over past prices; they predict nothing.
+  Educational use only — not investment advice. Paper trading is simulated money.
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

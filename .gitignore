@@ -1,0 +1,10 @@
+# OS noise
+Thumbs.db
+.DS_Store
+
+# local scratch
+*.log
+__pycache__/
+
+# NOTE: data/ IS committed on purpose — GitHub Pages serves it as the app's
+# same-origin dataset (browsers cannot call market APIs cross-origin).
