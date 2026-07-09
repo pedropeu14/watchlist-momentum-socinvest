@@ -58,7 +58,7 @@ const HELP = {
         <tr><td>Asset / Strategy</td><td>What to trade and which rule-set to follow (rules spelled out in the Strategies tab help).</td></tr>
         <tr><td>Window</td><td>How many trading days to replay (90d to 5 years). Longer windows produce more trades and therefore more meaningful statistics — a 4-trade result is an anecdote, not evidence.</td></tr>
         <tr><td>Capital $</td><td>Starting cash of the simulation.</td></tr>
-        <tr><td>Risk %</td><td><strong>Loss per trade if the stop hits — not how much you invest.</strong> The sizing formula is: risk budget = capital × risk% ; shares = budget ÷ (entry − stop). Example at 2% of $10,000: budget $200; entry $313.39 with stop $296.70 → $16.69 risk/share → 11 shares. Those 11 shares cost ~$3,450 (34% of capital <em>invested</em>) but only 2% is <em>at risk</em>. Low-volatility assets (tight ATR stop) get big positions, volatile ones get small positions — equal risk either way. Strategies without stops (Buy & Hold, MM200 Reversion) ignore this field and invest available cash.</td></tr>
+        <tr><td>Risk %</td><td><strong>Loss per trade if the stop hits — not how much you invest.</strong> The sizing formula is: risk budget = capital × risk% ; shares = budget ÷ (entry − stop). Example at 2% of $10,000: budget $200; entry $313.39 with stop $296.70 → $16.69 risk/share → 11 shares. Those 11 shares cost ~$3,450 (34% of capital <em>invested</em>) but only 2% is <em>at risk</em>. Low-volatility assets (tight ATR stop) get big positions, volatile ones get small positions — equal risk either way. Strategies without stops (Buy & Hold, MM200 Reversion) ignore this field and invest available cash. <strong>Stocks trade in whole shares; index assets (SPX, NDX, SOX…) trade in fractional units</strong> — you can't buy "1 Nasdaq" in real life anyway; actual exposure comes via ETFs or futures.</td></tr>
         <tr><td>Fee / trade $</td><td>Flat cost charged on each entry and exit — a crude stand-in for commissions and slippage.</td></tr>
       </table>
 
@@ -115,7 +115,7 @@ const HELP = {
       actually follow the system before any real money is involved.</p>
       <h4>Mechanics</h4>
       <ul>
-        <li><strong>Buys fill at the last daily close</strong> (this is an EOD system — there are no intraday fills to simulate). Position size follows your Risk % setting, exactly as in the Backtest help.</li>
+        <li><strong>Buys fill at the last daily close</strong> (this is an EOD system — there are no intraday fills to simulate). Position size follows your Risk % setting, exactly as in the Backtest help. Stocks buy whole shares; index assets buy fractional units (like an ETF would).</li>
         <li>Every position carries its ATR plan: stop at −2×ATR, target at +4×ATR (1:2 risk/reward).</li>
         <li>When the dataset refreshes (once per trading day via CI), each open position is checked against the new daily bars: if a day's low touched the stop it closes at the stop (stop wins ties), if the high touched the target it closes there — and you get an alert either way.</li>
         <li><strong>Close</strong> exits manually at the last close; <strong>Reset</strong> wipes the account back to starting capital.</li>

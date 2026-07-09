@@ -14,10 +14,14 @@ export function tradePlan(entry, atrValue, side = "long") {
   };
 }
 
-export function positionSize(capital, riskPct, plan) {
+// fractional=true is used for index assets: nobody buys "1 Nasdaq" — real
+// exposure comes via ETFs/futures where any dollar amount works. Quantities
+// are floored to 4 decimals so a position never overspends available cash.
+export function positionSize(capital, riskPct, plan, fractional = false) {
   if (!plan || plan.riskPerShare <= 0) return 0;
   const riskBudget = capital * (riskPct / 100);
-  const shares = Math.floor(riskBudget / plan.riskPerShare);
-  // never allocate more than the whole capital
-  return Math.max(0, Math.min(shares, Math.floor(capital / plan.entry)));
+  const raw = riskBudget / plan.riskPerShare;
+  const affordable = capital / plan.entry; // never allocate more than the whole capital
+  if (fractional) return Math.max(0, Math.floor(Math.min(raw, affordable) * 1e4) / 1e4);
+  return Math.max(0, Math.min(Math.floor(raw), Math.floor(affordable)));
 }

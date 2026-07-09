@@ -13,6 +13,7 @@ export function runBacktest(bars, ind, strategy, opts = {}) {
   const capital0 = opts.capital ?? 10000;
   const riskPct = opts.riskPct ?? 2;
   const feePerTrade = opts.fee ?? 0;
+  const fractional = opts.fractional ?? false; // index assets trade in fractions
 
   const n = bars.close.length;
   const warmup = 205; // sma200 + margin
@@ -58,8 +59,9 @@ export function runBacktest(bars, ind, strategy, opts = {}) {
       const entryPrice = openOf(i + 1);
       const p = strategy.useStops ? tradePlan(entryPrice, ind.atr14[i]) : null;
       const qty = strategy.useStops
-        ? positionSize(cash, riskPct, p)
-        : Math.floor(cash / entryPrice);
+        ? positionSize(cash, riskPct, p, fractional)
+        : (fractional ? Math.floor((cash / entryPrice) * 1e4) / 1e4
+                      : Math.floor(cash / entryPrice));
       if (qty > 0) {
         const cost = qty * entryPrice + feePerTrade;
         cash -= cost;

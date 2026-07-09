@@ -23,6 +23,9 @@ const fmtN = (v, d = 2) => v === null || v === undefined || Number.isNaN(v)
 const fmtPct = (v, d = 1) => v === null || v === undefined || !Number.isFinite(v)
   ? "—" : (v >= 0 ? "+" : "") + v.toFixed(d) + "%";
 const pctCls = v => v === null || v === undefined ? "" : v >= 0 ? "pos" : "neg";
+// quantities: whole shares for stocks, up to 4 decimals for index fractions
+const fmtQty = q => Number.isInteger(q) ? String(q) : q.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+const isIndex = ticker => ASSETS.get(ticker)?.meta.group === "index";
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
 function download(name, text, mime = "text/plain") {
@@ -295,7 +298,9 @@ function openDetail(ticker) {
   const sym = ccySym(a.currency);
   const plan = tradePlan(a.bars.close[i], a.ind.atr14[i]);
   const s = store.settings();
-  const size = plan ? positionSize(s.paperCapital, s.riskPct, plan) : 0;
+  const frac = a.meta.group === "index";
+  const size = plan ? positionSize(s.paperCapital, s.riskPct, plan, frac) : 0;
+  const unit = frac ? "units" : "sh";
 
   const voteRows = a.sig.votes.map((v, k) =>
     `<tr><td class="l">${VOTE_NAMES[k]}</td>
@@ -321,7 +326,7 @@ function openDetail(ticker) {
           <tr><td class="l">Stop (−2×ATR)</td><td>${sym}${fmtN(plan.stop)}</td></tr>
           <tr><td class="l">Target (+4×ATR)</td><td>${sym}${fmtN(plan.target)}</td></tr>
           <tr><td class="l">ATR 14</td><td>${sym}${fmtN(plan.atr)}</td></tr>
-          <tr><td class="l">Size @ ${s.riskPct}% risk of $${fmtN(s.paperCapital, 0)}</td><td>${size} sh</td></tr>
+          <tr><td class="l">Size @ ${s.riskPct}% risk of $${fmtN(s.paperCapital, 0)}</td><td>${fmtQty(size)} ${unit}</td></tr>
         </table>` : '<div class="muted">ATR unavailable</div>'}
       </div>
     </div>`);
@@ -383,6 +388,7 @@ function renderBacktest() {
     const res = runBacktest(a.bars, a.ind, STRATEGIES[$("#bt-strategy").value], {
       days: +$("#bt-days").value, capital: +$("#bt-capital").value,
       riskPct: +$("#bt-risk").value, fee: +$("#bt-fee").value,
+      fractional: a.meta.group === "index",
     });
     $("#bt-out").innerHTML = res ? backtestReport(a, res) : '<div class="panel">Not enough history for this window.</div>';
     const btn = $("#bt-csv");
@@ -409,14 +415,14 @@ function backtestReport(a, res) {
   const rows = res.trades.map(t => `<tr>
     <td class="l">${t.entryDate}</td><td>${sym}${fmtN(t.entryPrice)}</td>
     <td class="l">${t.exitDate}</td><td>${sym}${fmtN(t.exitPrice)}</td>
-    <td>${t.shares}</td><td class="${pctCls(t.pnl)}">$${fmtN(t.pnl)}</td>
+    <td>${fmtQty(t.shares)}</td><td class="${pctCls(t.pnl)}">$${fmtN(t.pnl)}</td>
     <td class="${pctCls(t.pnlPct)}">${fmtPct(t.pnlPct)}</td><td class="l">${t.reason}</td></tr>`).join("");
   return `
     ${metricCards(res.metrics)}
     <div class="panel"><h3>Equity curve ($${fmtN(res.capital0, 0)} start)</h3>
       ${equityChart(res.equity, res.equityDates, res.capital0)}</div>
     <div class="panel"><h3>Trades ${res.trades.length ? `<button class="btn small ghost" id="bt-csv">Export CSV</button>` : ""}</h3>
-      ${res.openPosition ? `<div class="banner">Position still open at window end: ${res.openPosition.shares} sh from ${res.openPosition.entryDate} @ ${sym}${fmtN(res.openPosition.entryPrice)} (unrealized $${fmtN(res.openPosition.unrealizedPnl)}) — not counted in trade stats.</div>` : ""}
+      ${res.openPosition ? `<div class="banner">Position still open at window end: ${fmtQty(res.openPosition.shares)} from ${res.openPosition.entryDate} @ ${sym}${fmtN(res.openPosition.entryPrice)} (unrealized $${fmtN(res.openPosition.unrealizedPnl)}) — not counted in trade stats.</div>` : ""}
       <div class="tablewrap"><table>
         <thead><tr><th class="l">Entry</th><th>Price</th><th class="l">Exit</th><th>Price</th><th>Sh</th><th>P&L</th><th>%</th><th class="l">Reason</th></tr></thead>
         <tbody>${rows || '<tr><td colspan="8" class="muted l">no closed trades in this window</td></tr>'}</tbody>
@@ -447,7 +453,8 @@ function renderStrategies() {
     const a = ASSETS.get($("#st-ticker").value);
     const days = +$("#st-days").value;
     const results = Object.entries(STRATEGIES).map(([k, s]) =>
-      ({ key: k, label: s.label, res: runBacktest(a.bars, a.ind, s, { days }) }))
+      ({ key: k, label: s.label,
+         res: runBacktest(a.bars, a.ind, s, { days, fractional: a.meta.group === "index" }) }))
       .filter(r => r.res);
 
     // equal-weight ensemble: capital split across the three active strategies
@@ -507,8 +514,12 @@ function paperBuy(ticker) {
   const plan = tradePlan(a.bars.close[i], a.ind.atr14[i]);
   if (!plan) { toast("ATR unavailable for " + ticker, "bad"); return; }
   if (p.positions.some(x => x.ticker === ticker)) { toast(ticker + " already open in paper account", "bad"); return; }
-  const qty = positionSize(Math.min(p.cash, paperEquity(p)), s.riskPct, plan);
-  if (qty < 1 || qty * plan.entry > p.cash) { toast("Not enough paper cash for 1 share of " + ticker, "bad"); return; }
+  const frac = a.meta.group === "index";
+  const qty = positionSize(Math.min(p.cash, paperEquity(p)), s.riskPct, plan, frac);
+  if (qty <= 0 || qty * plan.entry > p.cash) {
+    toast(`Not enough paper cash for ${frac ? "a fraction" : "1 share"} of ${ticker}`, "bad");
+    return;
+  }
   p.cash -= qty * plan.entry;
   p.positions.push({
     id: Date.now() + Math.random(), ticker, shares: qty,
@@ -516,7 +527,7 @@ function paperBuy(ticker) {
     entryDate: a.bars.date[i], signalConfidence: a.sig.confidence,
   });
   store.save("paper", p);
-  toast(`Paper BUY ${qty} ${ticker} @ ${fmtN(plan.entry)} (stop ${fmtN(plan.stop)}, target ${fmtN(plan.target)})`, "good");
+  toast(`Paper BUY ${fmtQty(qty)} ${ticker} @ ${fmtN(plan.entry)} (stop ${fmtN(plan.stop)}, target ${fmtN(plan.target)})`, "good");
   renderActive();
 }
 
@@ -590,7 +601,7 @@ function renderPaper() {
     const pnl = (last - pos.entry) * pos.shares;
     return `<tr>
       <td class="l"><strong>${pos.ticker}</strong></td><td>${pos.entryDate}</td>
-      <td>${pos.shares}</td><td>${fmtN(pos.entry)}</td><td>${fmtN(last)}</td>
+      <td>${fmtQty(pos.shares)}</td><td>${fmtN(pos.entry)}</td><td>${fmtN(last)}</td>
       <td>${fmtN(pos.stop)}</td><td>${fmtN(pos.target)}</td>
       <td class="${pctCls(pnl)}">$${fmtN(pnl)} (${fmtPct((last / pos.entry - 1) * 100)})</td>
       <td><button class="btn small ghost pc" data-id="${pos.id}">Close</button></td></tr>`;
@@ -598,7 +609,7 @@ function renderPaper() {
 
   const histRows = p.history.slice(0, 50).map(h => `<tr>
     <td class="l">${h.ticker}</td><td>${h.entryDate}</td><td>${h.exitDate}</td>
-    <td>${h.shares}</td><td>${fmtN(h.entry)}</td><td>${fmtN(h.exit)}</td>
+    <td>${fmtQty(h.shares)}</td><td>${fmtN(h.entry)}</td><td>${fmtN(h.exit)}</td>
     <td class="l">${h.reason}</td><td class="${pctCls(h.pnl)}">$${fmtN(h.pnl)}</td></tr>`).join("");
 
   el.innerHTML = `

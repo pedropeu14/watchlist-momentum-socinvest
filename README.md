@@ -35,7 +35,9 @@ Same pattern as a data pipeline: fetch once, serve snapshots.
   checked against daily high/low with stop-first tie-break. Win rate, ROI vs
   buy-&-hold, profit factor, max drawdown, annualized Sharpe, CSV export.
 - **Risk management** — ATR(14) trade plans: stop −2×ATR, target +4×ATR (1:2),
-  position sizing capped at a configurable % of capital (default 2%).
+  position sizing capped at a configurable % of capital (default 2%). Stocks
+  trade whole shares; index assets trade fractional units (nobody buys
+  "1 Nasdaq" — real exposure is via ETFs/futures).
 - **5 strategies compared** — Momentum (multi-confirmation), Mean Reversion
   (RSI+Bollinger), Breakout (55-day Donchian + volume), MM200 Reversion
   (Socinvest ±1σ rule), Buy & Hold benchmark, plus an equal-weight ensemble row.
