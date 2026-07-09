@@ -2,7 +2,7 @@
 """
 fetch_data.py — daily OHLCV snapshot for the Watchlist Momentum universe.
 
-Pulls up to 2 years of daily bars per asset from the Yahoo Finance chart API
+Pulls up to 10 years of daily bars per asset from the Yahoo Finance chart API
 (no key required) and writes one JSON per ticker under data/, plus a
 manifest.json the web app reads. Stdlib only.
 
@@ -29,8 +29,11 @@ ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data")
 UNIVERSE = os.path.join(HERE, "universe.json")
 
+# 10y of daily bars: long enough for a meaningful MM200 ruler (~9y of ratio
+# observations) and multi-year backtests, small enough (~250KB/asset) that the
+# static site still loads fast. "max" would be 3-8x heavier for little gain.
 CHART_URL = ("https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-             "?interval=1d&range=2y")
+             "?interval=1d&range=10y")
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 PAUSE_S = 0.35          # be polite; ~3 req/s max
 RETRIES = 2

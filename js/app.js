@@ -337,16 +337,17 @@ function mm200Section(a, sym) {
   const zone = m.z <= -1 ? '<span class="sig BUY">−1σ zone (depressed)</span>'
     : m.z >= 1 ? '<span class="sig SELL">+1σ zone (stretched)</span>'
     : '<span class="sig HOLD">inside the band</span>';
+  const years = ((a.bars.close.length - 200) / 252).toFixed(1);
   return `
     <h3>MM200 distance — price vs its own 200-day average ${zone}</h3>
-    ${mm200Chart(a.bars, a.ind, 252)}
+    ${mm200Chart(a.bars, a.ind, a.bars.close.length)}
     <div class="muted" style="font-size:12px;margin:4px 0 0">
       Ratio close/SMA200 = <strong>${m.ratio[i].toFixed(3)}</strong> ·
       historical mean ${m.mean.toFixed(3)} ± ${m.sd.toFixed(3)} (1σ) ·
       z-score = <strong>${m.z.toFixed(2)}</strong>.
       At today's SMA200, −1σ ≈ ${sym}${fmtN(buyLvl)} and +1σ ≈ ${sym}${fmtN(sellLvl)}.
-      Ruler spans this dataset (~2y) only — trending assets can stay beyond ±1σ for months;
-      backtest the "MM200 Reversion" strategy before trusting the rule on this asset.
+      Ruler built from ~${years}y of this asset's own ratio history — trending assets can
+      still stay beyond ±1σ for months; backtest "MM200 Reversion" before trusting the rule here.
     </div>`;
 }
 
@@ -362,7 +363,10 @@ function renderBacktest() {
         <label class="f">Asset<select id="bt-ticker">${tickers.map(t => `<option>${t}</option>`).join("")}</select></label>
         <label class="f">Strategy<select id="bt-strategy">${Object.entries(STRATEGIES).map(([k, s]) =>
           `<option value="${k}">${s.label}</option>`).join("")}</select></label>
-        <label class="f">Window (days)<select id="bt-days"><option>90</option><option selected>180</option><option>250</option></select></label>
+        <label class="f">Window<select id="bt-days">
+          <option value="90">90 days</option><option value="180" selected>180 days</option>
+          <option value="250">1 year</option><option value="500">2 years</option>
+          <option value="1250">5 years</option></select></label>
         <label class="f">Capital $<input id="bt-capital" type="number" value="10000" min="100" style="width:90px"></label>
         <label class="f">Risk %<input id="bt-risk" type="number" value="2" min="0.25" max="10" step="0.25" style="width:70px"></label>
         <label class="f">Fee/trade $<input id="bt-fee" type="number" value="0" min="0" step="0.5" style="width:70px"></label>
@@ -429,7 +433,10 @@ function renderStrategies() {
     <div class="panel">
       <div class="controls">
         <label class="f">Asset<select id="st-ticker">${tickers.map(t => `<option>${t}</option>`).join("")}</select></label>
-        <label class="f">Window (days)<select id="st-days"><option>90</option><option selected>180</option><option>250</option></select></label>
+        <label class="f">Window<select id="st-days">
+          <option value="90">90 days</option><option value="180" selected>180 days</option>
+          <option value="250">1 year</option><option value="500">2 years</option>
+          <option value="1250">5 years</option></select></label>
         <button class="btn" id="st-run">Compare strategies</button>
         <span class="pill">Dividend Growth from the original spec is omitted: the free EOD source has no dividend history — we don't fabricate inputs.</span>
       </div>

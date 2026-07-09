@@ -69,8 +69,9 @@ Treat the paper account like real money or it teaches you nothing:
 - **Survivorship**: this universe holds today's winners (NVDA, LLY…). A
   momentum backtest over hand-picked survivors flatters the strategy.
 - **EOD granularity**: real intraday stops would fill at different prices.
-- **One market regime**: ~2 years of data ≈ one regime. A strategy tuned on
-  it can fail the moment the regime changes.
+- **Regime dependence**: even with ~10 years of data, a strategy tuned on one
+  window can fail the moment the regime changes — always compare short and
+  long backtest windows before trusting a result.
 
 None of this is fixable with more features. It's fixable with humility and
 position sizing.
