@@ -126,6 +126,27 @@ export function macdChart(bars, ind, days, width = 860, height = 110) {
   </svg>`;
 }
 
+// MM200 ratio (close / SMA200) with the asset's own historical mean and ±1σ
+// band — the Socinvest ruler. Dashed lines: mean (grey), ±1σ (amber).
+export function mm200Chart(bars, ind, days, width = 860, height = 150) {
+  const m = ind.mm200;
+  if (m.mean === null || m.sd === null) return "";
+  const n = bars.close.length, from = Math.max(0, n - days);
+  const vals = m.ratio.slice(from);
+  const clean = vals.filter(v => v !== null);
+  if (clean.length < 2) return "";
+  const lo = Math.min(...clean, m.mean - m.sd), hi = Math.max(...clean, m.mean + m.sd);
+  const { x, y } = scales(width, height, vals.length, lo, hi);
+  const line = lv => `<line x1="${M.left}" x2="${width - M.right}" y1="${y(lv)}" y2="${y(lv)}" class="lim"/>
+    <text x="${width - M.right + 4}" y="${y(lv) + 3}" class="ax">${lv.toFixed(2)}</text>`;
+  return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" class="chart">
+    <rect x="${M.left}" y="${y(m.mean + m.sd)}" width="${width - M.left - M.right}"
+      height="${Math.abs(y(m.mean - m.sd) - y(m.mean + m.sd)).toFixed(1)}" class="rsiband"/>
+    ${line(m.mean + m.sd)}${line(m.mean)}${line(m.mean - m.sd)}
+    <path d="${pathOf(vals, x, y)}" class="lprice"/>
+  </svg>`;
+}
+
 export function equityChart(equity, dates, capital0, width = 860, height = 220) {
   if (!equity.length) return "";
   const { x, y, lo, hi } = scales(width, height, equity.length,

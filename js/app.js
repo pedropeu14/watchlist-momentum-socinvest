@@ -9,7 +9,7 @@ import { tradePlan, positionSize } from "./risk.js";
 import { STRATEGIES } from "./strategies.js";
 import { runBacktest, tradesToCsv } from "./backtest.js";
 import * as store from "./store.js";
-import { priceChart, rsiChart, macdChart, equityChart, sparkline } from "./charts.js";
+import { priceChart, rsiChart, macdChart, mm200Chart, equityChart, sparkline } from "./charts.js";
 import { helpPanel, initHelp } from "./help.js";
 
 // ---------------------------------------------------------------- utilities
@@ -91,11 +91,13 @@ function generateAlerts() {
     const r = a.ind.rsi14[i];
     const h = a.ind.macd.hist[i];
     const volRatio = a.ind.volAvg20[i] > 0 ? (a.bars.volume[i] || 0) / a.ind.volAvg20[i] : null;
+    const z = a.ind.mm200.z;
     const state = {
       date: a.bars.date[i],
       action: a.sig.action, strength: a.sig.strength,
       rsiZone: r === null ? null : r >= 70 ? "hi" : r <= 30 ? "lo" : "mid",
       macdSign: h === null ? null : h >= 0 ? 1 : -1,
+      mmZone: z === null ? null : z <= -1 ? "lo" : z >= 1 ? "hi" : "mid",
     };
     next[ticker] = state;
     const prev = seen?.[ticker];
@@ -111,6 +113,10 @@ function generateAlerts() {
       fresh.push({ ticker, type: "macd", msg: `${ticker}: MACD histogram flipped ${state.macdSign > 0 ? "positive" : "negative"}` });
     if (volRatio !== null && volRatio > 2)
       fresh.push({ ticker, type: "volume", msg: `${ticker}: volume spike ${volRatio.toFixed(1)}× the 20-day average` });
+    if (state.mmZone === "lo" && prev.mmZone !== "lo" && prev.mmZone !== null)
+      fresh.push({ ticker, type: "mm200", msg: `${ticker}: dropped 1σ below its MM200 ruler (z=${z.toFixed(2)}) — depressed zone` });
+    if (state.mmZone === "hi" && prev.mmZone !== "hi" && prev.mmZone !== null)
+      fresh.push({ ticker, type: "mm200", msg: `${ticker}: stretched 1σ above its MM200 ruler (z=${z.toFixed(2)})` });
   }
   store.save("lastSeen", next);
 
@@ -159,7 +165,7 @@ function rowData() {
       ticker: a.meta.ticker, name: a.meta.name, sector: a.meta.sector,
       close: a.bars.close[i], ccy: a.currency,
       d1: perf(a.bars, 1), m1: perf(a.bars, 21), m3: perf(a.bars, 63),
-      rsi: a.ind.rsi14[i], macdH: a.ind.macd.hist[i],
+      rsi: a.ind.rsi14[i], macdH: a.ind.macd.hist[i], mmz: a.ind.mm200.z,
       sig: a.sig, conf: a.sig.action === "HOLD" ? 0 : a.sig.confidence,
       a,
     };
@@ -217,6 +223,7 @@ function renderSignals() {
           <th class="l" data-k="ticker">Ticker</th><th class="l" data-k="name">Name</th>
           <th data-k="close">Close</th><th data-k="d1">1D</th><th data-k="m1">1M</th><th data-k="m3">3M</th>
           <th data-k="rsi">RSI</th><th data-k="macdH">MACD-H</th>
+          <th data-k="mmz" title="Distance from the 200-day average, in standard deviations of the asset's own history (Socinvest ruler)">MM200 σ</th>
           <th>Votes</th><th data-k="sigact">Signal</th><th data-k="conf">Conf.</th>
           <th>6M</th><th></th>
         </tr></thead><tbody></tbody>
@@ -234,7 +241,7 @@ function renderSignals() {
   const keyFn = {
     ticker: r => r.ticker, name: r => r.name, close: r => r.close,
     d1: r => r.d1 ?? -1e9, m1: r => r.m1 ?? -1e9, m3: r => r.m3 ?? -1e9,
-    rsi: r => r.rsi ?? -1, macdH: r => r.macdH ?? -1e9,
+    rsi: r => r.rsi ?? -1, macdH: r => r.macdH ?? -1e9, mmz: r => r.mmz ?? -1e9,
     sigact: r => r.sig.action, conf: r => r.conf,
   }[sortState.key] || (r => r.conf);
   list = [...list].sort((a, b) => {
@@ -255,6 +262,7 @@ function renderSignals() {
       <td class="${pctCls(r.m3)}">${fmtPct(r.m3)}</td>
       <td>${fmtN(r.rsi, 1)}</td>
       <td class="${pctCls(r.macdH)}">${fmtN(r.macdH, 2)}</td>
+      <td class="${r.mmz === null ? "" : r.mmz <= -1 ? "pos" : r.mmz >= 1 ? "neg" : "muted"}">${fmtN(r.mmz, 2)}</td>
       <td><span class="votes">${dots}</span></td>
       <td><span class="sig ${r.sig.action}">${r.sig.action}${r.sig.strength ? " · " + r.sig.strength : ""}</span></td>
       <td>${r.sig.action === "HOLD" ? "—" : r.conf + "%"}</td>
@@ -304,6 +312,7 @@ function openDetail(ticker) {
     ${priceChart(a.bars, a.ind, 252)}
     <h3>RSI 14</h3>${rsiChart(a.bars, a.ind, 252)}
     <h3>MACD 12/26/9</h3>${macdChart(a.bars, a.ind, 252)}
+    ${mm200Section(a, sym)}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
       <div><h3>Indicator votes</h3><table>${voteRows}</table></div>
       <div><h3>ATR trade plan (long)</h3>
@@ -316,6 +325,29 @@ function openDetail(ticker) {
         </table>` : '<div class="muted">ATR unavailable</div>'}
       </div>
     </div>`);
+}
+
+// MM200 distance block inside the detail modal (Socinvest ruler).
+function mm200Section(a, sym) {
+  const m = a.ind.mm200;
+  if (m.mean === null || m.sd === null || m.z === null) return "";
+  const i = a.bars.close.length - 1;
+  const s200 = a.ind.sma200[i];
+  const buyLvl = s200 * (m.mean - m.sd), sellLvl = s200 * (m.mean + m.sd);
+  const zone = m.z <= -1 ? '<span class="sig BUY">−1σ zone (depressed)</span>'
+    : m.z >= 1 ? '<span class="sig SELL">+1σ zone (stretched)</span>'
+    : '<span class="sig HOLD">inside the band</span>';
+  return `
+    <h3>MM200 distance — price vs its own 200-day average ${zone}</h3>
+    ${mm200Chart(a.bars, a.ind, 252)}
+    <div class="muted" style="font-size:12px;margin:4px 0 0">
+      Ratio close/SMA200 = <strong>${m.ratio[i].toFixed(3)}</strong> ·
+      historical mean ${m.mean.toFixed(3)} ± ${m.sd.toFixed(3)} (1σ) ·
+      z-score = <strong>${m.z.toFixed(2)}</strong>.
+      At today's SMA200, −1σ ≈ ${sym}${fmtN(buyLvl)} and +1σ ≈ ${sym}${fmtN(sellLvl)}.
+      Ruler spans this dataset (~2y) only — trending assets can stay beyond ±1σ for months;
+      backtest the "MM200 Reversion" strategy before trusting the rule on this asset.
+    </div>`;
 }
 
 // ---------------------------------------------------------------- backtest tab

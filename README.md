@@ -36,9 +36,13 @@ Same pattern as a data pipeline: fetch once, serve snapshots.
   buy-&-hold, profit factor, max drawdown, annualized Sharpe, CSV export.
 - **Risk management** — ATR(14) trade plans: stop −2×ATR, target +4×ATR (1:2),
   position sizing capped at a configurable % of capital (default 2%).
-- **4 strategies compared** — Momentum (multi-confirmation), Mean Reversion
-  (RSI+Bollinger), Breakout (55-day Donchian + volume), Buy & Hold benchmark,
-  plus an equal-weight ensemble row.
+- **5 strategies compared** — Momentum (multi-confirmation), Mean Reversion
+  (RSI+Bollinger), Breakout (55-day Donchian + volume), MM200 Reversion
+  (Socinvest ±1σ rule), Buy & Hold benchmark, plus an equal-weight ensemble row.
+- **MM200 ruler (Socinvest)** — price ÷ 200-day average, z-scored against the
+  asset's own history. Shown as a signals column, as a banded chart in the
+  detail view, and as ±1σ crossing alerts. The backtestable strategy uses an
+  expanding-window z (no lookahead), unlike the display ruler.
 - **Paper trading** — $10k virtual account. Fills at last EOD close;
   stops/targets honored against subsequent daily bars on each data refresh.
 - **Portfolio** — track real holdings (localStorage only, never uploaded):

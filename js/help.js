@@ -19,6 +19,10 @@ const HELP = {
         <li><strong>Click any row</strong> to open the full chart, each vote explained, and an ATR trade plan (entry / stop / target / position size).</li>
         <li><strong>Paper buy</strong> executes the signal in the simulator with virtual money — the safe way to test the system before trusting it.</li>
         <li>Sort by clicking column headers; filter by text or by one of your watchlists.</li>
+        <li><strong>MM200 σ</strong> is the Socinvest ruler: how far price sits from its own 200-day average,
+        in standard deviations of that asset's history. Green at ≤ −1σ (depressed), red at ≥ +1σ (stretched).
+        It's a mean-reversion lens — the opposite of momentum — so read it as context, and backtest the
+        "MM200 Reversion" strategy before trading it.</li>
       </ul>
       <p class="help-caveat">A signal describes what prices <em>have been</em> doing — it predicts nothing.
       Before acting on one, check the Backtest tab to see how often it actually worked on that asset.</p>`,
@@ -49,6 +53,8 @@ const HELP = {
         <li><strong>Momentum</strong> — buys when the 6-vote signal says BUY, exits when it decays (this app's headline strategy).</li>
         <li><strong>Mean Reversion</strong> — buys panic (RSI &lt; 30, below the lower Bollinger band), sells the bounce.</li>
         <li><strong>Breakout</strong> — buys new 55-day highs on strong volume, exits below the 20-day low.</li>
+        <li><strong>MM200 Reversion</strong> — the Socinvest ±1σ rule: buy 1σ below the asset's historical
+        distance to its 200-day average, sell 1σ above (computed without lookahead, no stops — the pure rule).</li>
         <li><strong>Buy &amp; Hold</strong> — the benchmark. Any strategy that loses to it after drawdown isn't earning its complexity.</li>
       </ul>
       <p class="help-caveat">Picking whichever strategy won <em>after</em> seeing the results is itself a trap

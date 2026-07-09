@@ -138,11 +138,49 @@ export function rollingMin(values, n) {
   return out;
 }
 
+// MM200 distance (Socinvest ruler): ratio = close / SMA200, measured against
+// the asset's OWN history — z = (ratio − historical mean) / historical SD.
+// Two z variants are returned:
+//   zSeries  — full-sample mean/SD (matches the Socinvest app; display only)
+//   zExp     — expanding window up to each bar (no lookahead; what backtests
+//              must use, since the full-sample ruler peeks at the future)
+export function mm200(closes, sma200arr, minObs = 60) {
+  const n = closes.length;
+  const ratio = closes.map((v, i) => sma200arr[i] ? v / sma200arr[i] : null);
+  const obs = ratio.filter(v => v !== null);
+  const out = { ratio, mean: null, sd: null, z: null,
+                zSeries: new Array(n).fill(null), zExp: new Array(n).fill(null) };
+  if (obs.length < minObs) return out;
+
+  const mean = obs.reduce((s, v) => s + v, 0) / obs.length;
+  const sd = Math.sqrt(obs.reduce((s, v) => s + (v - mean) ** 2, 0) / obs.length);
+  out.mean = mean; out.sd = sd;
+  if (sd > 0) {
+    for (let i = 0; i < n; i++)
+      if (ratio[i] !== null) out.zSeries[i] = (ratio[i] - mean) / sd;
+    out.z = out.zSeries[n - 1];
+  }
+
+  let cnt = 0, sum = 0, sumsq = 0;
+  for (let i = 0; i < n; i++) {
+    const r = ratio[i];
+    if (r === null) continue;
+    cnt++; sum += r; sumsq += r * r;
+    if (cnt < minObs) continue;
+    const m = sum / cnt;
+    const s = Math.sqrt(Math.max(sumsq / cnt - m * m, 0));
+    if (s > 0) out.zExp[i] = (r - m) / s;
+  }
+  return out;
+}
+
 // Convenience bundle: everything the app needs for one asset, computed once.
 export function computeAll(bars) {
   const c = bars.close, v = bars.volume, h = bars.high, l = bars.low;
+  const sma200v = sma(c, 200);
   return {
-    sma20: sma(c, 20), sma50: sma(c, 50), sma200: sma(c, 200),
+    sma20: sma(c, 20), sma50: sma(c, 50), sma200: sma200v,
+    mm200: mm200(c, sma200v),
     ema12: ema(c, 12), ema26: ema(c, 26),
     rsi14: rsi(c, 14),
     macd: macd(c),

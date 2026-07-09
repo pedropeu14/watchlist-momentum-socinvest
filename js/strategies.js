@@ -50,6 +50,20 @@ export const STRATEGIES = {
     useStops: true,
   },
 
+  mm200Reversion: {
+    label: "MM200 Reversion (±1σ)",
+    describe: "Socinvest ruler: buy when price sits 1σ below its own historical distance to the 200-day average, sell at 1σ above. The z-score here is expanding-window (no lookahead), so backtest values can differ slightly from the full-history ruler shown elsewhere. No ATR stops — the pure rule, as stated.",
+    enter(ind, bars, i) {
+      const z = ind.mm200.zExp[i];
+      return z !== null && z <= -1;
+    },
+    exit(ind, bars, i) {
+      const z = ind.mm200.zExp[i];
+      return z !== null && z >= 1;
+    },
+    useStops: false,
+  },
+
   buyHold: {
     label: "Buy & Hold (benchmark)",
     describe: "Buy on the first tradable bar of the window, never sell. The bar every active strategy must beat.",
