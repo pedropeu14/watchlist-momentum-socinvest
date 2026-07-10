@@ -603,15 +603,23 @@ function renderStrategies() {
       let peak = -Infinity, dd = 0;
       for (const e of eq) { peak = Math.max(peak, e); dd = Math.max(dd, (peak - e) / peak); }
       ensembleRow = `<tr><td class="l"><strong>Equal-weight ensemble</strong> <span class="muted">(1/${active.length} in each active strategy)</span></td>
-        <td>—</td><td>—</td><td class="${pctCls(ret)}">${fmtPct(ret)}</td><td>—</td>
+        <td>—</td><td>—</td><td>—</td><td class="${pctCls(ret)}">${fmtPct(ret)}</td><td>—</td>
         <td class="neg">−${(dd * 100).toFixed(1)}%</td><td>—</td></tr>`;
     }
 
     $("#st-out").innerHTML = `<div class="panel"><div class="tablewrap"><table>
-      <thead><tr><th class="l">Strategy</th><th>Trades</th><th>Win rate</th><th>Return</th>
+      <thead><tr><th class="l">Strategy</th>
+        <th title="Finished round-trips — the only trades counted in win rate and profit factor">Closed</th>
+        <th title="Position still riding at the window's end; its unrealized return and entry date are shown. Mark-to-market, not banked profit — it IS included in Return.">Open</th>
+        <th>Win rate</th><th>Return</th>
         <th>Profit factor</th><th>Max DD</th><th>Sharpe</th></tr></thead>
-      <tbody>${results.map(r => { const m = r.res.metrics; return `<tr>
+      <tbody>${results.map(r => { const m = r.res.metrics; const op = r.res.openPosition;
+        const opCell = op
+          ? `1 <span class="muted">(${fmtPct((op.lastPrice / op.entryPrice - 1) * 100)} since ${op.entryDate})</span>`
+          : '<span class="muted">0</span>';
+        return `<tr>
         <td class="l">${r.label}</td><td>${m.trades}</td>
+        <td style="white-space:nowrap">${opCell}</td>
         <td>${m.winRate === null ? "—" : m.winRate.toFixed(0) + "%"}</td>
         <td class="${pctCls(m.totalReturnPct)}">${fmtPct(m.totalReturnPct)}</td>
         <td>${m.profitFactor === null ? "—" : m.profitFactor === Infinity ? "∞" : m.profitFactor.toFixed(2)}</td>

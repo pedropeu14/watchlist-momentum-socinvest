@@ -104,6 +104,7 @@ const HELP = {
       <ul>
         <li>Run <strong>short and long windows</strong> (180d, 2y, 5y). A strategy that only wins in one window is fitted to that window's regime.</li>
         <li>Check <strong>trade counts</strong> before win rates — 100% of 1 trade is an anecdote.</li>
+        <li><strong>Closed vs Open:</strong> only closed round-trips enter win rate and profit factor. An <em>Open</em> position's unrealized return is shown next to it and IS included in Return — a strategy can show "+24% with 0 closed trades" because it's still riding one position (mark-to-market, not banked profit).</li>
         <li>Trending markets favor Momentum/Breakout; choppy, range-bound markets favor the reversion strategies. Knowing <em>which regime you're in</em> is the hard part no backtest solves.</li>
       </ul>
       <p class="help-caveat">Picking whichever strategy won <em>after</em> seeing the results is itself a trap
