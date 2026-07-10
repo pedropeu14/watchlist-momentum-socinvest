@@ -32,7 +32,10 @@ DATA_DIR = os.path.join(ROOT, "data")
 UNIVERSE = os.path.join(HERE, "universe.json")
 
 SOURCE_URL = "https://pedropeu14.github.io/Socinvest/pe_fwd.json"
-SKIP = {"SX7E Index": "Bloomberg SX7E = EURO STOXX Banks; app price series is STOXX Europe 600"}
+SKIP = {
+    "SX7E Index": "Bloomberg SX7E = EURO STOXX Banks; app price series is STOXX Europe 600",
+    "ARA CN Equity": "Canadian listing — a different company from the delisted US ARA in the universe",
+}
 MIN_OBS = 52   # at least a year of weekly points before the ruler means anything
 
 
