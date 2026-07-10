@@ -480,7 +480,7 @@ function f13Section(a) {
 
 function renderBacktest() {
   const el = $("#tab-backtest");
-  const tickers = [...ASSETS.keys()];
+  const tickers = [...ASSETS.keys()].sort();
   el.innerHTML = `
     ${helpPanel("backtest")}
     <div class="panel">
@@ -491,6 +491,7 @@ function renderBacktest() {
         <label class="f">Window<select id="bt-days">
           <option value="90">90 days</option><option value="180" selected>180 days</option>
           <option value="250">1 year</option><option value="500">2 years</option>
+          <option value="750">3 years</option><option value="1000">4 years</option>
           <option value="1250">5 years</option></select></label>
         <label class="f">Capital $<input id="bt-capital" type="number" value="10000" min="100" style="width:90px"></label>
         <label class="f">Risk %<input id="bt-risk" type="number" value="2" min="0.25" max="10" step="0.25" style="width:70px"></label>
@@ -566,7 +567,7 @@ function backtestReport(a, res) {
 
 function renderStrategies() {
   const el = $("#tab-strategies");
-  const tickers = [...ASSETS.keys()];
+  const tickers = [...ASSETS.keys()].sort();
   el.innerHTML = `
     ${helpPanel("strategies")}
     <div class="panel">
@@ -575,6 +576,7 @@ function renderStrategies() {
         <label class="f">Window<select id="st-days">
           <option value="90">90 days</option><option value="180" selected>180 days</option>
           <option value="250">1 year</option><option value="500">2 years</option>
+          <option value="750">3 years</option><option value="1000">4 years</option>
           <option value="1250">5 years</option></select></label>
         <button class="btn" id="st-run">Compare strategies</button>
         <span class="pill">Dividend Growth from the original spec is omitted: the free EOD source has no dividend history — we don't fabricate inputs.</span>
@@ -899,7 +901,7 @@ function renderPortfolio() {
     ${rebalance}
     <div class="panel">
       <div class="controls">
-        <label class="f">Ticker<select id="pf-ticker">${[...ASSETS.keys()].map(t => `<option>${t}</option>`).join("")}</select></label>
+        <label class="f">Ticker<select id="pf-ticker">${[...ASSETS.keys()].sort().map(t => `<option>${t}</option>`).join("")}</select></label>
         <label class="f">Shares<input id="pf-shares" type="number" min="0.0001" step="any" style="width:90px"></label>
         <label class="f">Cost basis / share<input id="pf-cost" type="number" min="0" step="any" style="width:110px"></label>
         <button class="btn" id="pf-add">Add position</button>
@@ -1055,7 +1057,7 @@ function renderWatchlists() {
         }).join("")}</ul>
         <div class="controls" style="margin:0">
           <select class="wl-addsel" data-id="${esc(w.id)}">
-            ${[...ASSETS.keys()].filter(t => !w.tickers.includes(t)).map(t => `<option>${t}</option>`).join("")}
+            ${[...ASSETS.keys()].sort().filter(t => !w.tickers.includes(t)).map(t => `<option>${t}</option>`).join("")}
           </select>
           <button class="btn small wl-add" data-id="${esc(w.id)}">Add</button>
         </div>
