@@ -36,7 +36,9 @@ SKIP = {
     "SX7E Index": "Bloomberg SX7E = EURO STOXX Banks; app price series is STOXX Europe 600",
     "ARA CN Equity": "Canadian listing — a different company from the delisted US ARA in the universe",
 }
-MIN_OBS = 52   # at least a year of weekly points before the ruler means anything
+# Floor matches the Socinvest source (30 weekly points). Rulers with n < 52
+# are statistically thin — the app labels them "still forming" in the modal.
+MIN_OBS = 30
 
 
 def bloomberg_to_ticker(key):

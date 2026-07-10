@@ -435,6 +435,7 @@ function fpeSection(a) {
       Forward P/E = <strong>${e.last.toFixed(1)}×</strong> (${e.last_date}) ·
       ${e.robust ? "robust " : ""}historical mean ${e.mean.toFixed(1)} ± ${e.sd.toFixed(1)} (1σ) over ${e.n} weekly points ·
       z-score = <strong>${e.z.toFixed(2)}</strong>.
+      ${e.n < 52 ? "<strong>Short history — this ruler is still forming (under a year of data); read its z with extra suspicion.</strong>" : ""}
       Bloomberg series via the Socinvest project. The denominator is <em>projected</em> consensus earnings —
       the z moves on estimate revisions, not only on price.
     </div>

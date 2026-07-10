@@ -180,7 +180,7 @@ export function mm200(closes, sma200arr, minObs = 60) {
 // Values are winsorized to [2, 100] before entering the statistics: near-zero
 // earnings produce four-digit P/Es (SOX in the dot-com era) that would wreck
 // a naive expanding mean.
-export function fpeExpandingZ(bars, entry, minObs = 52) {
+export function fpeExpandingZ(bars, entry, minObs = 30) {
   if (!entry) return null;
   const zExp = new Array(bars.date.length).fill(null);
   const D = entry.dates, V = entry.values;
