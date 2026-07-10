@@ -66,14 +66,14 @@ export const STRATEGIES = {
 
   fpeReversion: {
     label: "Fwd P/E Reversion (±1σ)",
-    describe: "Socinvest ruler on the forward multiple: buy when the forward P/E sits 1σ below the asset's own history, sell at 1σ above. Expanding-window z (no lookahead), winsorized to P/E 2–100; no stops. Only runs on assets with Bloomberg forward P/E coverage.",
+    describe: "Socinvest ruler on the forward multiple: buy when the forward P/E sits 1σ below, sell at 1σ above — measured against a ROLLING 3-year window (median ± P16/P84, the same ruler as the Socinvest chart), so 'cheap' means cheap vs the current regime, not vs a decade-old panic. No lookahead, no stops. Only runs on assets with Bloomberg coverage.",
     requires: "fpe",
     enter(ind, bars, i) {
-      const z = ind.fpeZExp?.[i];
+      const z = ind.fpeZRoll?.[i];
       return z !== null && z !== undefined && z <= -1;
     },
     exit(ind, bars, i) {
-      const z = ind.fpeZExp?.[i];
+      const z = ind.fpeZRoll?.[i];
       return z !== null && z !== undefined && z >= 1;
     },
     useStops: false,
@@ -81,14 +81,14 @@ export const STRATEGIES = {
 
   quadrantPosition: {
     label: "Quadrant Position (0-cut)",
-    describe: "The sign-based map, mechanized: buy while the asset sits in the cheap & depressed quadrant (MM200 z AND forward P/E z both below zero — the Socinvest scatter's bottom-left), sell when it reaches expensive & stretched (both above zero). Much softer thresholds than Double Depression, so it trades far more and filters far less — compare the two to see what the ±1σ strictness is actually worth. Expanding-window z, no stops.",
+    describe: "The sign-based map, mechanized: buy while the asset sits in the cheap & depressed quadrant (MM200 z AND forward P/E z both below zero — the Socinvest scatter's bottom-left), sell when it reaches expensive & stretched (both above zero). Much softer thresholds than Double Depression, so it trades far more and filters far less — compare the two to see what the ±1σ strictness is actually worth. No stops.",
     requires: "fpe",
     enter(ind, bars, i) {
-      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      const m = ind.mm200.zExp[i], f = ind.fpeZRoll?.[i];
       return m !== null && f !== null && f !== undefined && m < 0 && f < 0;
     },
     exit(ind, bars, i) {
-      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      const m = ind.mm200.zExp[i], f = ind.fpeZRoll?.[i];
       return m !== null && f !== null && f !== undefined && m > 0 && f > 0;
     },
     useStops: false,
@@ -99,11 +99,11 @@ export const STRATEGIES = {
     describe: "The quadrant buy zone, mechanized: enter when BOTH the MM200 z-score and the forward P/E z-score are at or below −1σ (price depressed AND multiple cheap vs their own histories); exit when either ruler stretches to +1σ. No stops — the pure quadrant rule.",
     requires: "fpe",
     enter(ind, bars, i) {
-      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      const m = ind.mm200.zExp[i], f = ind.fpeZRoll?.[i];
       return m !== null && f !== null && f !== undefined && m <= -1 && f <= -1;
     },
     exit(ind, bars, i) {
-      const m = ind.mm200.zExp[i], f = ind.fpeZExp?.[i];
+      const m = ind.mm200.zExp[i], f = ind.fpeZRoll?.[i];
       return (m !== null && m >= 1) || (f !== null && f !== undefined && f >= 1);
     },
     useStops: false,

@@ -4,9 +4,16 @@ build_fpe.py — forward P/E layer from the Socinvest project.
 
 Reads pe_fwd.json published by the Socinvest tool (weekly Bloomberg forward
 P/E series since 2002, refreshed manually by the user) and writes
-data/fpe.json keyed by this app's tickers. The statistical ruler is the same
-one used for the MM200: each asset against its OWN history — mean and
-population SD over the full series, z = (last − mean) / sd.
+data/fpe.json keyed by this app's tickers.
+
+The ruler matches the Socinvest CHART (not the full series): a ROLLING
+3-YEAR window (156 weekly points), centered on the MEDIAN with a robust
+sigma of (P84 − P16) / 2, z = (last − median) / sigma. Rationale: multiples
+re-rate structurally (META's 2022 crash at 9x would anchor a full-history
+ruler forever, so "cheap" would never fire again); a rolling window measures
+cheap/expensive vs what the market has been paying in the CURRENT regime.
+Percentiles also make outliers (near-zero-earnings P/Es) harmless without
+winsorization.
 
 Coverage is whatever the Bloomberg export contains (the original Socinvest
 universe); assets without a series simply show "—" in the app.
@@ -39,6 +46,14 @@ SKIP = {
 # Floor matches the Socinvest source (30 weekly points). Rulers with n < 52
 # are statistically thin — the app labels them "still forming" in the modal.
 MIN_OBS = 30
+WINDOW_WEEKS = 156   # rolling 3-year ruler, same as the Socinvest chart
+
+
+def pctile(sorted_vals, p):
+    k = (len(sorted_vals) - 1) * p
+    f = int(k)
+    c = min(f + 1, len(sorted_vals) - 1)
+    return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
 
 
 def bloomberg_to_ticker(key):
@@ -75,24 +90,29 @@ def main():
         if len(pairs) < MIN_OBS:
             skipped.append((key, f"only {len(pairs)} points"))
             continue
-        # The Socinvest source computes ROBUST mean/sd (outlier-resistant) —
-        # essential for series like SOX, where the dot-com era had near-zero
-        # earnings and four-digit P/Es that wreck naive statistics. Use theirs.
-        mean, sd = entry["mean"], entry["sd"]
+        window = pairs[-WINDOW_WEEKS:]
+        wvals = sorted(v for _, v in window)
+        med = pctile(wvals, 0.5)
+        p16, p84 = pctile(wvals, 0.16), pctile(wvals, 0.84)
+        sd = (p84 - p16) / 2
         last = pairs[-1][1]
         out_tickers[t] = {
             "dates": [d for d, _ in pairs],
             "values": [round(v, 3) for _, v in pairs],
-            "mean": round(mean, 3),
-            "sd": round(sd, 3),
-            "robust": bool(entry.get("robust")),
+            "mean": round(med, 3),          # ruler center = rolling-window MEDIAN
+            "sd": round(sd, 3),             # robust sigma = (P84 − P16) / 2
+            "p16": round(p16, 3),
+            "p84": round(p84, 3),
+            "window_weeks": len(window),
+            "method": "median ± (P84−P16)/2 over rolling 3y window",
             "last": round(last, 3),
             "last_date": pairs[-1][0],
-            "z": round((last - mean) / sd, 3) if sd else None,
+            "z": round((last - med) / sd, 3) if sd else None,
             "n": len(pairs),
         }
-        print(f"  {t:8s} {len(pairs):4d} wk  {pairs[0][0]} -> {pairs[-1][0]}  "
-              f"last {last:7.2f}  mean {mean:6.2f} ± {sd:5.2f}  z {(last-mean)/sd:+.2f}")
+        print(f"  {t:8s} {len(pairs):4d} wk (window {len(window):3d})  "
+              f"last {last:7.2f}  med {med:6.2f} ± {sd:5.2f}  "
+              f"z {((last-med)/sd if sd else 0):+.2f}")
 
     out = {
         "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

@@ -3,7 +3,7 @@
 // indicators/signals once per asset, and renders the tabs. All user state
 // (paper trades, portfolio, watchlists, alerts) lives in localStorage.
 
-import { computeAll, fpeExpandingZ } from "./indicators.js";
+import { computeAll, fpeRollingZ } from "./indicators.js";
 import { latestSignal, signalAt, VOTE_NAMES } from "./signals.js";
 import { tradePlan, positionSize } from "./risk.js";
 import { STRATEGIES } from "./strategies.js";
@@ -111,7 +111,7 @@ async function loadAll() {
   } catch { FPE = null; }
   for (const a of ASSETS.values()) {
     a.fpe = fpeOf(a.meta.ticker);
-    a.ind.fpeZExp = a.fpe ? fpeExpandingZ(a.bars, a.fpe) : null;
+    a.ind.fpeZRoll = a.fpe ? fpeRollingZ(a.bars, a.fpe) : null;
   }
 
   const lastDates = [...ASSETS.values()].map(a => a.bars.date.at(-1)).sort();
@@ -429,15 +429,17 @@ function fpeSection(a) {
     : '<span class="sig HOLD">inside the band</span>';
   const v = quadrantVerdict(a.ind.mm200.z, e.z);
   return `
-    <h3>Forward P/E — multiple vs its own history ${zone}</h3>
+    <h3>Forward P/E — multiple vs its rolling 3-year window ${zone}</h3>
     ${fpeChart(e)}
     <div class="muted" style="font-size:12px;margin:4px 0 0">
       Forward P/E = <strong>${e.last.toFixed(1)}×</strong> (${e.last_date}) ·
-      ${e.robust ? "robust " : ""}historical mean ${e.mean.toFixed(1)} ± ${e.sd.toFixed(1)} (1σ) over ${e.n} weekly points ·
+      rolling 3y median ${e.mean.toFixed(1)} · ±1σ (P16/P84) ${e.p16.toFixed(1)} / ${e.p84.toFixed(1)}
+      over the last ${e.window_weeks} weeks ·
       z-score = <strong>${e.z.toFixed(2)}</strong>.
-      ${e.n < 52 ? "<strong>Short history — this ruler is still forming (under a year of data); read its z with extra suspicion.</strong>" : ""}
-      Bloomberg series via the Socinvest project. The denominator is <em>projected</em> consensus earnings —
-      the z moves on estimate revisions, not only on price.
+      ${e.window_weeks < 52 ? "<strong>Short history — this ruler is still forming (under a year of data); read its z with extra suspicion.</strong>" : ""}
+      Same ruler as the Socinvest chart (rolling window, percentile bands): "cheap" means cheap vs the
+      current regime, not vs a decade-old panic. Bloomberg series via the Socinvest project; the denominator
+      is <em>projected</em> consensus earnings — the z moves on estimate revisions, not only on price.
     </div>
     ${v ? (() => {
       const pos = quadrantPosition(a.ind.mm200.z, e.z);
@@ -505,7 +507,7 @@ function renderBacktest() {
     const a = ASSETS.get($("#bt-ticker").value);
     [...$("#bt-strategy").options].forEach(o => {
       const s = STRATEGIES[o.value];
-      o.disabled = s.requires === "fpe" && !a.ind.fpeZExp;
+      o.disabled = s.requires === "fpe" && !a.ind.fpeZRoll;
       o.textContent = s.label + (o.disabled ? " (no fwd P/E data)" : "");
     });
     if ($("#bt-strategy").selectedOptions[0]?.disabled) $("#bt-strategy").value = "momentum";
@@ -584,7 +586,7 @@ function renderStrategies() {
     const a = ASSETS.get($("#st-ticker").value);
     const days = +$("#st-days").value;
     const available = Object.entries(STRATEGIES)
-      .filter(([, s]) => !(s.requires === "fpe" && !a.ind.fpeZExp));
+      .filter(([, s]) => !(s.requires === "fpe" && !a.ind.fpeZRoll));
     const skippedNote = available.length < Object.keys(STRATEGIES).length
       ? `<div class="muted" style="margin-top:8px">Fwd P/E strategies skipped: no Bloomberg forward P/E coverage for ${a.meta.ticker}.</div>` : "";
     const results = available.map(([k, s]) =>

@@ -174,34 +174,39 @@ export function mm200(closes, sma200arr, minObs = 60) {
   return out;
 }
 
-// Forward P/E expanding z aligned to daily bars (weekly source series).
-// As-of join: each bar sees the latest weekly value published on or before
-// its date, and the mean/SD use only values seen so far — no lookahead.
-// Values are winsorized to [2, 100] before entering the statistics: near-zero
-// earnings produce four-digit P/Es (SOX in the dot-com era) that would wreck
-// a naive expanding mean.
-export function fpeExpandingZ(bars, entry, minObs = 30) {
+// Forward P/E rolling z aligned to daily bars (weekly source series).
+// Ruler matches the Socinvest chart: at each week, the trailing 3-year
+// (156-week) window's MEDIAN and robust sigma (P84 − P16) / 2. No lookahead:
+// each bar sees only the weekly values published on or before its date.
+// Percentiles make near-zero-earnings outlier P/Es harmless by construction.
+export function fpeRollingZ(bars, entry, windowWeeks = 156, minObs = 30) {
   if (!entry) return null;
-  const zExp = new Array(bars.date.length).fill(null);
   const D = entry.dates, V = entry.values;
-  let i = 0, n = 0, sum = 0, sumsq = 0, lastVal = null;
+  // weekly z first (cheap: one small sort per week)
+  const wz = new Array(D.length).fill(null);
+  for (let i = 0; i < D.length; i++) {
+    const from = Math.max(0, i - windowWeeks + 1);
+    const win = V.slice(from, i + 1).filter(v => v !== null && v !== undefined);
+    if (win.length < minObs) continue;
+    win.sort((a, b) => a - b);
+    const q = p => {
+      const k = (win.length - 1) * p, f = Math.floor(k);
+      return win[f] + (win[Math.min(f + 1, win.length - 1)] - win[f]) * (k - f);
+    };
+    const med = q(0.5), sd = (q(0.84) - q(0.16)) / 2;
+    if (sd > 0) wz[i] = (V[i] - med) / sd;
+  }
+  // as-of join onto the daily bars (step function between weekly points)
+  const out = new Array(bars.date.length).fill(null);
+  let i = 0, cur = null;
   for (let b = 0; b < bars.date.length; b++) {
-    const d = bars.date[b];
-    while (i < D.length && D[i] <= d) {
-      let v = V[i];
-      if (v !== null && v !== undefined) {
-        v = Math.min(Math.max(v, 2), 100);
-        n++; sum += v; sumsq += v * v; lastVal = v;
-      }
+    while (i < D.length && D[i] <= bars.date[b]) {
+      if (wz[i] !== null) cur = wz[i];
       i++;
     }
-    if (lastVal !== null && n >= minObs) {
-      const m = sum / n;
-      const s = Math.sqrt(Math.max(sumsq / n - m * m, 0));
-      if (s > 0) zExp[b] = (lastVal - m) / s;
-    }
+    out[b] = cur;
   }
-  return zExp;
+  return out;
 }
 
 // Convenience bundle: everything the app needs for one asset, computed once.

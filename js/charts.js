@@ -147,25 +147,29 @@ export function mm200Chart(bars, ind, days, width = 860, height = 150) {
   </svg>`;
 }
 
-// Forward P/E weekly series with the asset's own robust mean and ±1σ band.
-// Display is clamped to mean ± 4σ so a dot-com-era outlier can't squash the
-// whole chart into a flat line.
+// Forward P/E — shows the SAME window the ruler is computed on (rolling 3y,
+// like the Socinvest chart), with median and P16/P84 percentile bands.
+// Display clamped to median ± 4σ so an outlier can't squash the chart flat.
 export function fpeChart(entry, width = 860, height = 150) {
   if (!entry || entry.sd === null) return "";
+  const from = Math.max(0, entry.values.length - (entry.window_weeks || 156));
   const cap = entry.mean + 4 * entry.sd;
   const floor0 = Math.max(0, entry.mean - 4 * entry.sd);
-  const vals = entry.values.map(v => Math.min(Math.max(v, floor0), cap));
-  const lo = Math.min(...vals, entry.mean - entry.sd);
-  const hi = Math.max(...vals, entry.mean + entry.sd);
+  const vals = entry.values.slice(from).map(v => Math.min(Math.max(v, floor0), cap));
+  const dates = entry.dates.slice(from);
+  const lo = Math.min(...vals, entry.p16 ?? entry.mean - entry.sd);
+  const hi = Math.max(...vals, entry.p84 ?? entry.mean + entry.sd);
   const { x, y } = scales(width, height, vals.length, lo, hi);
+  const upper = entry.p84 ?? entry.mean + entry.sd;
+  const lower = entry.p16 ?? entry.mean - entry.sd;
   const line = lv => `<line x1="${M.left}" x2="${width - M.right}" y1="${y(lv)}" y2="${y(lv)}" class="lim"/>
     <text x="${width - M.right + 4}" y="${y(lv) + 3}" class="ax">${lv.toFixed(1)}</text>`;
   return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" class="chart">
-    <rect x="${M.left}" y="${y(entry.mean + entry.sd)}" width="${width - M.left - M.right}"
-      height="${Math.abs(y(entry.mean - entry.sd) - y(entry.mean + entry.sd)).toFixed(1)}" class="rsiband"/>
-    ${line(entry.mean + entry.sd)}${line(entry.mean)}${line(entry.mean - entry.sd)}
+    <rect x="${M.left}" y="${y(upper)}" width="${width - M.left - M.right}"
+      height="${Math.abs(y(lower) - y(upper)).toFixed(1)}" class="rsiband"/>
+    ${line(upper)}${line(entry.mean)}${line(lower)}
     <path d="${pathOf(vals, x, y)}" class="lprice"/>
-    ${dateTicks(entry.dates, x, height)}
+    ${dateTicks(dates, x, height)}
   </svg>`;
 }
 
