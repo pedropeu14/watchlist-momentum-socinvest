@@ -85,6 +85,7 @@
     { "ticker": "AKAM",   "yahoo": "AKAM",     "name": "Akamai Technologies",            "sector": "Technology",  "group": "stock", "via": "13F" },
     { "ticker": "INTC",   "yahoo": "INTC",     "name": "Intel Corporation",              "sector": "Technology",  "group": "stock", "via": "13F" },
 
+    { "ticker": "ORCL",   "yahoo": "ORCL",     "name": "Oracle Corporation",             "sector": "Technology",  "group": "stock" },
     { "ticker": "005930.KS", "yahoo": "005930.KS", "name": "Samsung Electronics",        "sector": "Technology",  "group": "stock",
       "note": "KRX listing, prices in Korean won (KRW). No US ADR, so no 13F coverage; forward P/E flows in if '005930 KS Equity' is added to the Socinvest Bloomberg export." },
     { "ticker": "000660.KS", "yahoo": "000660.KS", "name": "SK hynix",                   "sector": "Technology",  "group": "stock",

@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-07-17T12:43:17Z",
+ "fetched_at": "2026-07-17T13:10:36Z",
  "source": "Yahoo Finance (EOD)",
  "assets": [
   {
@@ -52,7 +52,7 @@
    "file": "SX7E.json",
    "currency": "EUR",
    "last_date": "2026-07-17",
-   "last_close": 640.47998046875,
+   "last_close": 640.4400024414062,
    "bar_count": 2512
   },
   {
@@ -1037,6 +1037,19 @@
    "currency": "USD",
    "last_date": "2026-07-16",
    "last_close": 96.9800033569336,
+   "bar_count": 2513
+  },
+  {
+   "ticker": "ORCL",
+   "name": "Oracle Corporation",
+   "sector": "Technology",
+   "group": "stock",
+   "yahoo": "ORCL",
+   "available": true,
+   "file": "ORCL.json",
+   "currency": "USD",
+   "last_date": "2026-07-16",
+   "last_close": 124.20999908447266,
    "bar_count": 2513
   },
   {
