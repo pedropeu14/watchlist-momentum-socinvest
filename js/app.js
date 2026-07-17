@@ -656,6 +656,10 @@ function paperEquity(p) {
 function paperBuy(ticker) {
   const a = ASSETS.get(ticker);
   if (!a) return;
+  if (a.currency !== "USD") {
+    toast(`${ticker} trades in ${a.currency} — the paper account is USD-only (no FX conversion here; mixing currencies would fake the math)`, "bad");
+    return;
+  }
   const p = paperState();
   const s = store.settings();
   const i = a.bars.close.length - 1;
@@ -919,6 +923,10 @@ function renderPortfolio() {
   $("#pf-add").onclick = () => {
     const t = $("#pf-ticker").value, sh = +$("#pf-shares").value, c = +$("#pf-cost").value;
     if (!sh || sh <= 0 || !c || c <= 0) { toast("Fill shares and cost basis with positive numbers", "bad"); return; }
+    if (ASSETS.get(t)?.currency !== "USD") {
+      toast(`${t} trades in ${ASSETS.get(t)?.currency} — the portfolio tracker sums in USD only (mixing currencies would distort weights and P&L)`, "bad");
+      return;
+    }
     const list = portfolio();
     list.push({ id: Date.now(), ticker: t, shares: sh, cost: c });
     store.save("portfolio", list);

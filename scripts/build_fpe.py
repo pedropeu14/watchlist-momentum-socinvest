@@ -57,8 +57,12 @@ def pctile(sorted_vals, p):
 
 
 def bloomberg_to_ticker(key):
-    """'AAPL US Equity' -> 'AAPL', 'SPX Index' -> 'SPX', 'ASML NA Equity' -> 'ASML'."""
-    return key.split()[0]
+    """'AAPL US Equity' -> 'AAPL', 'SPX Index' -> 'SPX', 'ASML NA Equity' -> 'ASML',
+    '005930 KS Equity' -> '005930.KS' (Korean listings use Yahoo notation here)."""
+    parts = key.split()
+    if len(parts) >= 2 and parts[1].upper() == "KS":
+        return parts[0] + ".KS"
+    return parts[0]
 
 
 def main():

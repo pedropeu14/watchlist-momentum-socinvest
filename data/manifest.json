@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-07-16T23:25:16Z",
+ "fetched_at": "2026-07-17T12:43:17Z",
  "source": "Yahoo Finance (EOD)",
  "assets": [
   {
@@ -38,7 +38,7 @@
    "file": "SOX.json",
    "currency": "USD",
    "last_date": "2026-07-16",
-   "last_close": 11867.5029296875,
+   "last_close": 11867.5,
    "bar_count": 2513
   },
   {
@@ -51,9 +51,9 @@
    "available": true,
    "file": "SX7E.json",
    "currency": "EUR",
-   "last_date": "2026-07-15",
-   "last_close": 642.7100219726562,
-   "bar_count": 2510
+   "last_date": "2026-07-17",
+   "last_close": 640.47998046875,
+   "bar_count": 2512
   },
   {
    "ticker": "S5ENRS",
@@ -65,9 +65,9 @@
    "available": true,
    "file": "S5ENRS.json",
    "currency": "USD",
-   "last_date": "2026-07-16",
-   "last_close": 871.1699829101562,
-   "bar_count": 2510
+   "last_date": "2026-07-10",
+   "last_close": 839.5800170898438,
+   "bar_count": 2509
   },
   {
    "ticker": "AAPL",
@@ -339,9 +339,9 @@
    "available": true,
    "file": "S5FINL.json",
    "currency": "USD",
-   "last_date": "2026-07-16",
-   "last_close": 944.3300170898438,
-   "bar_count": 2507
+   "last_date": "2026-07-10",
+   "last_close": 926.7999877929688,
+   "bar_count": 2506
   },
   {
    "ticker": "ARA",
@@ -1038,6 +1038,34 @@
    "last_date": "2026-07-16",
    "last_close": 96.9800033569336,
    "bar_count": 2513
+  },
+  {
+   "ticker": "005930.KS",
+   "name": "Samsung Electronics",
+   "sector": "Technology",
+   "group": "stock",
+   "note": "KRX listing, prices in Korean won (KRW). No US ADR, so no 13F coverage; forward P/E flows in if '005930 KS Equity' is added to the Socinvest Bloomberg export.",
+   "yahoo": "005930.KS",
+   "available": true,
+   "file": "005930.KS.json",
+   "currency": "KRW",
+   "last_date": "2026-07-16",
+   "last_close": 255000.0,
+   "bar_count": 2447
+  },
+  {
+   "ticker": "000660.KS",
+   "name": "SK hynix",
+   "sector": "Technology",
+   "group": "stock",
+   "note": "KRX listing, prices in Korean won (KRW). No US ADR, so no 13F coverage; forward P/E flows in if '000660 KS Equity' is added to the Socinvest Bloomberg export.",
+   "yahoo": "000660.KS",
+   "available": true,
+   "file": "000660.KS.json",
+   "currency": "KRW",
+   "last_date": "2026-07-16",
+   "last_close": 1842000.0,
+   "bar_count": 2447
   }
  ]
 }
