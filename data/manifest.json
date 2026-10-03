@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-10-02T01:47:50Z",
+ "fetched_at": "2026-10-03T01:19:45Z",
  "source": "Yahoo Finance (EOD)",
  "assets": [
   {
@@ -11,9 +11,9 @@
    "available": true,
    "file": "SPX.json",
    "currency": "USD",
-   "last_date": "2026-10-01",
-   "last_close": 7666.4501953125,
-   "bar_count": 2513
+   "last_date": "2026-10-02",
+   "last_close": 7722.72021484375,
+   "bar_count": 2514
   },
   {
    "ticker": "NDX",
@@ -24,9 +24,9 @@
    "available": true,
    "file": "NDX.json",
    "currency": "USD",
-   "last_date": "2026-10-01",
-   "last_close": 30501.560546875,
-   "bar_count": 2513
+   "last_date": "2026-10-02",
+   "last_close": 30807.931640625,
+   "bar_count": 2514
   },
   {
    "ticker": "SOX",
@@ -37,9 +37,9 @@
    "available": true,
    "file": "SOX.json",
    "currency": "USD",
-   "last_date": "2026-10-01",
-   "last_close": 12829.0,
-   "bar_count": 2513
+   "last_date": "2026-10-02",
+   "last_close": 13136.6748046875,
+   "bar_count": 2514
   },
   {
    "ticker": "SX7E",
@@ -1055,7 +1055,7 @@
    "file": "005930.KS.json",
    "currency": "KRW",
    "last_date": "2026-10-02",
-   "last_close": 275000.0,
+   "last_close": 276000.0,
    "bar_count": 2448
   },
   {
@@ -1069,7 +1069,7 @@
    "file": "000660.KS.json",
    "currency": "KRW",
    "last_date": "2026-10-02",
-   "last_close": 1839000.0,
+   "last_close": 1841000.0,
    "bar_count": 2448
   }
  ]
