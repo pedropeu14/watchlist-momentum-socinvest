@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-10-14T01:22:21Z",
+ "fetched_at": "2026-10-15T00:45:31Z",
  "source": "Yahoo Finance (EOD)",
  "assets": [
   {
@@ -11,8 +11,8 @@
    "available": true,
    "file": "SPX.json",
    "currency": "USD",
-   "last_date": "2026-10-13",
-   "last_close": 7805.4501953125,
+   "last_date": "2026-10-14",
+   "last_close": 7718.93994140625,
    "bar_count": 2512
   },
   {
@@ -24,8 +24,8 @@
    "available": true,
    "file": "NDX.json",
    "currency": "USD",
-   "last_date": "2026-10-13",
-   "last_close": 30569.48046875,
+   "last_date": "2026-10-14",
+   "last_close": 29950.81640625,
    "bar_count": 2512
   },
   {
@@ -37,8 +37,8 @@
    "available": true,
    "file": "SOX.json",
    "currency": "USD",
-   "last_date": "2026-10-13",
-   "last_close": 12208.794921875,
+   "last_date": "2026-10-14",
+   "last_close": 11684.3828125,
    "bar_count": 2512
   },
   {
@@ -51,9 +51,9 @@
    "available": true,
    "file": "SX7E.json",
    "currency": "EUR",
-   "last_date": "2026-10-12",
-   "last_close": 635.6500244140625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 637.75,
+   "bar_count": 2512
   },
   {
    "ticker": "S5ENRS",
@@ -74,9 +74,9 @@
    "available": true,
    "file": "AAPL.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 340.9700012207031,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 342.9599914550781,
+   "bar_count": 2512
   },
   {
    "ticker": "MSFT",
@@ -87,9 +87,9 @@
    "available": true,
    "file": "MSFT.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 541.1500244140625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 533.6900024414062,
+   "bar_count": 2512
   },
   {
    "ticker": "GOOGL",
@@ -100,9 +100,9 @@
    "available": true,
    "file": "GOOGL.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 352.7200012207031,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 347.6400146484375,
+   "bar_count": 2512
   },
   {
    "ticker": "NVDA",
@@ -113,9 +113,9 @@
    "available": true,
    "file": "NVDA.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 226.32000732421875,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 221.3000030517578,
+   "bar_count": 2512
   },
   {
    "ticker": "META",
@@ -126,8 +126,8 @@
    "available": true,
    "file": "META.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 742.9600219726562,
+   "last_date": "2026-10-13",
+   "last_close": 762.5,
    "bar_count": 2511
   },
   {
@@ -139,9 +139,9 @@
    "available": true,
    "file": "NFLX.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 70.61000061035156,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 70.56999969482422,
+   "bar_count": 2512
   },
   {
    "ticker": "SPOT",
@@ -152,9 +152,9 @@
    "available": true,
    "file": "SPOT.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 528.7999877929688,
-   "bar_count": 2144
+   "last_date": "2026-10-13",
+   "last_close": 527.4500122070312,
+   "bar_count": 2145
   },
   {
    "ticker": "ASML",
@@ -165,9 +165,9 @@
    "available": true,
    "file": "ASML.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 1750.239990234375,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 1650.0,
+   "bar_count": 2512
   },
   {
    "ticker": "TSM",
@@ -178,9 +178,9 @@
    "available": true,
    "file": "TSM.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 444.3500061035156,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 430.0,
+   "bar_count": 2512
   },
   {
    "ticker": "NOW",
@@ -191,8 +191,8 @@
    "available": true,
    "file": "NOW.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 140.32000732421875,
+   "last_date": "2026-10-13",
+   "last_close": 138.61000061035156,
    "bar_count": 2511
   },
   {
@@ -204,9 +204,9 @@
    "available": true,
    "file": "AMZN.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 259.5299987792969,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 254.0800018310547,
+   "bar_count": 2512
   },
   {
    "ticker": "IBM",
@@ -217,9 +217,9 @@
    "available": true,
    "file": "IBM.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 227.02000427246094,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 227.8800048828125,
+   "bar_count": 2512
   },
   {
    "ticker": "MU",
@@ -230,9 +230,9 @@
    "available": true,
    "file": "MU.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 989.0399780273438,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 914.1300048828125,
+   "bar_count": 2512
   },
   {
    "ticker": "VALE",
@@ -243,9 +243,9 @@
    "available": true,
    "file": "VALE.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 13.520000457763672,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 13.210000038146973,
+   "bar_count": 2512
   },
   {
    "ticker": "BRK/B",
@@ -256,9 +256,9 @@
    "available": true,
    "file": "BRK-B.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 517.5999755859375,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 526.3499755859375,
+   "bar_count": 2512
   },
   {
    "ticker": "LLY",
@@ -269,9 +269,9 @@
    "available": true,
    "file": "LLY.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 1182.6199951171875,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 1208.739990234375,
+   "bar_count": 2512
   },
   {
    "ticker": "IRM",
@@ -282,9 +282,9 @@
    "available": true,
    "file": "IRM.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 115.0999984741211,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 110.86000061035156,
+   "bar_count": 2512
   },
   {
    "ticker": "JBL",
@@ -295,9 +295,9 @@
    "available": true,
    "file": "JBL.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 312.010009765625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 293.9100036621094,
+   "bar_count": 2512
   },
   {
    "ticker": "NU",
@@ -308,9 +308,9 @@
    "available": true,
    "file": "NU.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 16.010000228881836,
-   "bar_count": 1214
+   "last_date": "2026-10-13",
+   "last_close": 15.579999923706055,
+   "bar_count": 1215
   },
   {
    "ticker": "MELI",
@@ -321,9 +321,9 @@
    "available": true,
    "file": "MELI.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 1892.43994140625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 1839.1099853515625,
+   "bar_count": 2512
   },
   {
    "ticker": "S5FINL",
@@ -355,9 +355,9 @@
    "available": true,
    "file": "BNT.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 37.04999923706055,
-   "bar_count": 1329
+   "last_date": "2026-10-13",
+   "last_close": 36.66999816894531,
+   "bar_count": 1330
   },
   {
    "ticker": "VRT",
@@ -369,9 +369,9 @@
    "available": true,
    "file": "VRT.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 239.36000061035156,
-   "bar_count": 2059
+   "last_date": "2026-10-13",
+   "last_close": 237.2899932861328,
+   "bar_count": 2060
   },
   {
    "ticker": "V",
@@ -383,9 +383,9 @@
    "available": true,
    "file": "V.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 389.2699890136719,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 391.42999267578125,
+   "bar_count": 2512
   },
   {
    "ticker": "MA",
@@ -397,9 +397,9 @@
    "available": true,
    "file": "MA.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 595.0900268554688,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 603.239990234375,
+   "bar_count": 2512
   },
   {
    "ticker": "MCO",
@@ -411,9 +411,9 @@
    "available": true,
    "file": "MCO.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 470.5,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 462.7699890136719,
+   "bar_count": 2512
   },
   {
    "ticker": "UBER",
@@ -425,9 +425,9 @@
    "available": true,
    "file": "UBER.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 71.5,
-   "bar_count": 1866
+   "last_date": "2026-10-13",
+   "last_close": 71.31999969482422,
+   "bar_count": 1867
   },
   {
    "ticker": "FERG",
@@ -439,9 +439,9 @@
    "available": true,
    "file": "FERG.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 220.5500030517578,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 222.94000244140625,
+   "bar_count": 2512
   },
   {
    "ticker": "GE",
@@ -453,9 +453,9 @@
    "available": true,
    "file": "GE.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 308.6400146484375,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 307.0199890136719,
+   "bar_count": 2512
   },
   {
    "ticker": "QSR",
@@ -467,8 +467,8 @@
    "available": true,
    "file": "QSR.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 71.12000274658203,
+   "last_date": "2026-10-13",
+   "last_close": 71.2699966430664,
    "bar_count": 2511
   },
   {
@@ -481,9 +481,9 @@
    "available": true,
    "file": "APP.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 270.8699951171875,
-   "bar_count": 1380
+   "last_date": "2026-10-13",
+   "last_close": 272.2799987792969,
+   "bar_count": 1381
   },
   {
    "ticker": "AVGO",
@@ -495,9 +495,9 @@
    "available": true,
    "file": "AVGO.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 354.7300109863281,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 346.25,
+   "bar_count": 2512
   },
   {
    "ticker": "CIEN",
@@ -509,9 +509,9 @@
    "available": true,
    "file": "CIEN.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 405.010009765625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 359.6000061035156,
+   "bar_count": 2512
   },
   {
    "ticker": "LRCX",
@@ -523,9 +523,9 @@
    "available": true,
    "file": "LRCX.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 309.55999755859375,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 286.9200134277344,
+   "bar_count": 2512
   },
   {
    "ticker": "CRM",
@@ -537,9 +537,9 @@
    "available": true,
    "file": "CRM.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 233.9199981689453,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 235.9499969482422,
+   "bar_count": 2512
   },
   {
    "ticker": "DIS",
@@ -551,9 +551,9 @@
    "available": true,
    "file": "DIS.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 108.48999786376953,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 108.98999786376953,
+   "bar_count": 2512
   },
   {
    "ticker": "AXP",
@@ -565,9 +565,9 @@
    "available": true,
    "file": "AXP.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 311.5299987792969,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 306.95001220703125,
+   "bar_count": 2512
   },
   {
    "ticker": "KHC",
@@ -579,8 +579,8 @@
    "available": true,
    "file": "KHC.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 22.450000762939453,
+   "last_date": "2026-10-13",
+   "last_close": 22.43000030517578,
    "bar_count": 2511
   },
   {
@@ -593,9 +593,9 @@
    "available": true,
    "file": "SPGI.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 412.19000244140625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 408.57000732421875,
+   "bar_count": 2512
   },
   {
    "ticker": "BAM",
@@ -607,9 +607,9 @@
    "available": true,
    "file": "BAM.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 45.83000183105469,
-   "bar_count": 968
+   "last_date": "2026-10-13",
+   "last_close": 45.22999954223633,
+   "bar_count": 969
   },
   {
    "ticker": "COF",
@@ -621,9 +621,9 @@
    "available": true,
    "file": "COF.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 201.13999938964844,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 194.35000610351562,
+   "bar_count": 2512
   },
   {
    "ticker": "CRS",
@@ -635,9 +635,9 @@
    "available": true,
    "file": "CRS.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 377.25,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 379.7300109863281,
+   "bar_count": 2512
   },
   {
    "ticker": "VST",
@@ -649,8 +649,8 @@
    "available": true,
    "file": "VST.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 158.1300048828125,
+   "last_date": "2026-10-13",
+   "last_close": 162.36000061035156,
    "bar_count": 2511
   },
   {
@@ -663,9 +663,9 @@
    "available": true,
    "file": "CPNG.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 15.279999732971191,
-   "bar_count": 1404
+   "last_date": "2026-10-13",
+   "last_close": 15.119999885559082,
+   "bar_count": 1405
   },
   {
    "ticker": "TDG",
@@ -677,9 +677,9 @@
    "available": true,
    "file": "TDG.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 1119.93994140625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 1109.77001953125,
+   "bar_count": 2512
   },
   {
    "ticker": "GLW",
@@ -691,9 +691,9 @@
    "available": true,
    "file": "GLW.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 147.27999877929688,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 140.88999938964844,
+   "bar_count": 2512
   },
   {
    "ticker": "AMAT",
@@ -705,9 +705,9 @@
    "available": true,
    "file": "AMAT.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 497.5299987792969,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 446.6300048828125,
+   "bar_count": 2512
   },
   {
    "ticker": "KKR",
@@ -719,9 +719,9 @@
    "available": true,
    "file": "KKR.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 91.51000213623047,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 85.5999984741211,
+   "bar_count": 2512
   },
   {
    "ticker": "LYV",
@@ -733,9 +733,9 @@
    "available": true,
    "file": "LYV.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 169.63999938964844,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 168.83999633789062,
+   "bar_count": 2512
   },
   {
    "ticker": "MDLN",
@@ -747,9 +747,9 @@
    "available": true,
    "file": "MDLN.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 35.7599983215332,
-   "bar_count": 205
+   "last_date": "2026-10-13",
+   "last_close": 35.70000076293945,
+   "bar_count": 206
   },
   {
    "ticker": "LLYVA",
@@ -761,9 +761,9 @@
    "available": true,
    "file": "LLYVA.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 94.16999816894531,
-   "bar_count": 800
+   "last_date": "2026-10-13",
+   "last_close": 95.5,
+   "bar_count": 801
   },
   {
    "ticker": "ECHO",
@@ -775,9 +775,9 @@
    "available": true,
    "file": "ECHO.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 95.0999984741211,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 87.86000061035156,
+   "bar_count": 2512
   },
   {
    "ticker": "COHR",
@@ -789,9 +789,9 @@
    "available": true,
    "file": "COHR.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 288.0199890136719,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 263.32000732421875,
+   "bar_count": 2512
   },
   {
    "ticker": "RBLX",
@@ -803,9 +803,9 @@
    "available": true,
    "file": "RBLX.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 49.58000183105469,
-   "bar_count": 1405
+   "last_date": "2026-10-13",
+   "last_close": 49.5099983215332,
+   "bar_count": 1406
   },
   {
    "ticker": "PDD",
@@ -817,9 +817,9 @@
    "available": true,
    "file": "PDD.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 80.91999816894531,
-   "bar_count": 2064
+   "last_date": "2026-10-13",
+   "last_close": 81.95999908447266,
+   "bar_count": 2065
   },
   {
    "ticker": "WDC",
@@ -831,9 +831,9 @@
    "available": true,
    "file": "WDC.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 386.94000244140625,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 364.1000061035156,
+   "bar_count": 2512
   },
   {
    "ticker": "MDB",
@@ -845,9 +845,9 @@
    "available": true,
    "file": "MDB.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 381.2900085449219,
-   "bar_count": 2256
+   "last_date": "2026-10-13",
+   "last_close": 373.07000732421875,
+   "bar_count": 2257
   },
   {
    "ticker": "SNOW",
@@ -859,9 +859,9 @@
    "available": true,
    "file": "SNOW.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 360.3699951171875,
-   "bar_count": 1525
+   "last_date": "2026-10-13",
+   "last_close": 357.760009765625,
+   "bar_count": 1526
   },
   {
    "ticker": "UNP",
@@ -873,9 +873,9 @@
    "available": true,
    "file": "UNP.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 281.57000732421875,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 286.42999267578125,
+   "bar_count": 2512
   },
   {
    "ticker": "CSGP",
@@ -887,9 +887,9 @@
    "available": true,
    "file": "CSGP.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 29.209999084472656,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 30.110000610351562,
+   "bar_count": 2512
   },
   {
    "ticker": "TWLO",
@@ -901,8 +901,8 @@
    "available": true,
    "file": "TWLO.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 282.6600036621094,
+   "last_date": "2026-10-13",
+   "last_close": 281.5899963378906,
    "bar_count": 2511
   },
   {
@@ -915,9 +915,9 @@
    "available": true,
    "file": "DKS.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 137.3699951171875,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 136.9600067138672,
+   "bar_count": 2512
   },
   {
    "ticker": "NCLH",
@@ -929,8 +929,8 @@
    "available": true,
    "file": "NCLH.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 15.350000381469727,
+   "last_date": "2026-10-13",
+   "last_close": 15.319999694824219,
    "bar_count": 2511
   },
   {
@@ -943,9 +943,9 @@
    "available": true,
    "file": "CPRT.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 26.479999542236328,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 26.270000457763672,
+   "bar_count": 2512
   },
   {
    "ticker": "LION",
@@ -957,9 +957,9 @@
    "available": true,
    "file": "LION.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 11.079999923706055,
-   "bar_count": 1159
+   "last_date": "2026-10-13",
+   "last_close": 11.119999885559082,
+   "bar_count": 1160
   },
   {
    "ticker": "DHR",
@@ -971,9 +971,9 @@
    "available": true,
    "file": "DHR.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 221.1999969482422,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 224.69000244140625,
+   "bar_count": 2512
   },
   {
    "ticker": "AMD",
@@ -985,9 +985,9 @@
    "available": true,
    "file": "AMD.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 594.239990234375,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 570.8200073242188,
+   "bar_count": 2512
   },
   {
    "ticker": "FUN",
@@ -999,9 +999,9 @@
    "available": true,
    "file": "FUN.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 11.920000076293945,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 8.9399995803833,
+   "bar_count": 2512
   },
   {
    "ticker": "AKAM",
@@ -1013,9 +1013,9 @@
    "available": true,
    "file": "AKAM.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 101.6500015258789,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 91.70999908447266,
+   "bar_count": 2512
   },
   {
    "ticker": "INTC",
@@ -1027,9 +1027,9 @@
    "available": true,
    "file": "INTC.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 101.3499984741211,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 98.12000274658203,
+   "bar_count": 2512
   },
   {
    "ticker": "ORCL",
@@ -1040,9 +1040,9 @@
    "available": true,
    "file": "ORCL.json",
    "currency": "USD",
-   "last_date": "2026-10-12",
-   "last_close": 137.38999938964844,
-   "bar_count": 2511
+   "last_date": "2026-10-14",
+   "last_close": 130.5500030517578,
+   "bar_count": 2512
   },
   {
    "ticker": "005930.KS",
@@ -1054,8 +1054,8 @@
    "available": true,
    "file": "005930.KS.json",
    "currency": "KRW",
-   "last_date": "2026-10-14",
-   "last_close": 237000.0,
+   "last_date": "2026-10-15",
+   "last_close": 215750.0,
    "bar_count": 2446
   },
   {
@@ -1068,8 +1068,8 @@
    "available": true,
    "file": "000660.KS.json",
    "currency": "KRW",
-   "last_date": "2026-10-14",
-   "last_close": 1465000.0,
+   "last_date": "2026-10-15",
+   "last_close": 1294000.0,
    "bar_count": 2446
   }
  ]
