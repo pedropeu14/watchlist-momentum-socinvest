@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-26T04:18:41Z",
+ "fetched_at": "2026-11-27T04:26:22Z",
  "source": "Yahoo Finance (EOD)",
  "assets": [
   {
@@ -25,7 +25,7 @@
    "file": "NDX.json",
    "currency": "USD",
    "last_date": "2026-11-25",
-   "last_close": 26046.896484375,
+   "last_close": 26046.900390625,
    "bar_count": 2513
   },
   {
@@ -38,7 +38,7 @@
    "file": "SOX.json",
    "currency": "USD",
    "last_date": "2026-11-25",
-   "last_close": 8774.8623046875,
+   "last_close": 8774.8603515625,
    "bar_count": 2513
   },
   {
@@ -51,8 +51,8 @@
    "available": true,
    "file": "SX7E.json",
    "currency": "EUR",
-   "last_date": "2026-11-25",
-   "last_close": 626.030029296875,
+   "last_date": "2026-11-26",
+   "last_close": 636.97998046875,
    "bar_count": 2512
   },
   {
@@ -1054,9 +1054,9 @@
    "available": true,
    "file": "005930.KS.json",
    "currency": "KRW",
-   "last_date": "2026-11-26",
-   "last_close": 172700.0,
-   "bar_count": 2446
+   "last_date": "2026-11-27",
+   "last_close": 178200.0,
+   "bar_count": 2447
   },
   {
    "ticker": "000660.KS",
@@ -1068,9 +1068,9 @@
    "available": true,
    "file": "000660.KS.json",
    "currency": "KRW",
-   "last_date": "2026-11-26",
-   "last_close": 1057000.0,
-   "bar_count": 2446
+   "last_date": "2026-11-27",
+   "last_close": 1097000.0,
+   "bar_count": 2447
   }
  ]
 }
